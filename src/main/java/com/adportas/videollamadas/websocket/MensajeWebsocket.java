@@ -1,0 +1,40 @@
+package com.adportas.videollamadas.websocket;
+
+import java.util.Date;
+
+/**
+ *
+ * @author benjamin
+ * @param <T>
+ */
+public class MensajeWebsocket<T> {
+
+    private Date fecha;
+    private TipoMensaje tipoMensaje;
+    private T contenido;
+
+    public Date getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
+    }
+
+    public TipoMensaje getTipoMensaje() {
+        return tipoMensaje;
+    }
+
+    public void setTipoMensaje(TipoMensaje tipoMensaje) {
+        this.tipoMensaje = tipoMensaje;
+    }
+
+    public T getContenido() {
+        return contenido;
+    }
+
+    public void setContenido(T contenido) {
+        this.contenido = contenido;
+    }
+
+}
