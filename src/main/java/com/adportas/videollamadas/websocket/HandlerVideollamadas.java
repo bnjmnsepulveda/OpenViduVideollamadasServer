@@ -1,6 +1,7 @@
 package com.adportas.videollamadas.websocket;
 
 import com.adportas.videollamadas.domain.ContactoAgente;
+import com.adportas.videollamadas.enumerated.EstadoVideoLLamada;
 import com.adportas.videollamadas.exceptions.VideollamadasException;
 import com.adportas.videollamadas.helper.JsonHelper;
 import com.adportas.videollamadas.service.VideollamadaService;
@@ -99,6 +100,7 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
                 websocketService.sendMessage(request.getContenido().getReceptor(), responseReceptor);
                 websocketService.sendMessage(request.getContenido().getEmisor(), responseEmisor);
                 logger.info("hay " + videollamadaService.cantidadSesiones() + " sesiones de videollamadas");
+                videollamadaService.actualizarEstadoVideollamada(videollamadaId, EstadoVideoLLamada.ESTABLECIDA);
             }
 
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {

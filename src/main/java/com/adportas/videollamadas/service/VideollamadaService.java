@@ -13,7 +13,6 @@ import io.openvidu.java.client.TokenOptions;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import javax.validation.constraints.NotNull;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,6 +57,12 @@ public class VideollamadaService {
         return false;
     }
 
+    /**
+     * Crea una sesion OpenVidu para realizar la videollamada.
+     * @param videollamadaId
+     * @throws OpenViduJavaClientException
+     * @throws OpenViduHttpException 
+     */
     public void crearSesionVideollamada(String videollamadaId) throws OpenViduJavaClientException, OpenViduHttpException {
         logger.info("crear sesion para videollamada [id=" +videollamadaId + "] sesiones cantidad = " +sessions.size());
         SesionVideollamada sesionVideollamada = sessions.get(videollamadaId);
@@ -72,6 +77,14 @@ public class VideollamadaService {
         }
     }
 
+    /**
+     * Crea un token de videollamada asociado a una videollamadaId.
+     * @param videollamadaId
+     * @param contacto
+     * @return
+     * @throws OpenViduJavaClientException
+     * @throws OpenViduHttpException 
+     */
     public String crearTokenVideollamada(String videollamadaId, ContactoAgente contacto) throws OpenViduJavaClientException, OpenViduHttpException {
         if(videollamadaId == null) {
             throw new NullPointerException("videollamadId esta en nulo");
@@ -94,12 +107,23 @@ public class VideollamadaService {
         return token;
     }
 
+    /**
+     * Actualiza el estado de una videollamada.
+     * @param videollamadaId
+     * @param estado
+     * @return 
+     */
     public boolean actualizarEstadoVideollamada(String videollamadaId, EstadoVideoLLamada estado) {
         if (sessions.get(videollamadaId) != null) {
             sessions.get(videollamadaId).setEstado(estado);
             return true;
         }
         return false;
+    }
+    
+    public boolean isContactoDisponible(ContactoAgente contacto){
+        boolean disponible = true;
+        return disponible;
     }
 
     public void removeSession(String videollamadaId) throws OpenViduJavaClientException, OpenViduHttpException {
