@@ -2,13 +2,18 @@ package com.adportas.videollamadas.service;
 
 import com.adportas.videollamadas.domain.ContactoAgente;
 import com.adportas.videollamadas.domain.SesionVideollamada;
+import com.adportas.videollamadas.enumerated.EstadoVideoLLamada;
+import com.adportas.videollamadas.exceptions.VideollamadasException;
 import io.openvidu.java.client.OpenVidu;
+import io.openvidu.java.client.OpenViduHttpException;
+import io.openvidu.java.client.OpenViduJavaClientException;
 import io.openvidu.java.client.OpenViduRole;
 import io.openvidu.java.client.Session;
 import io.openvidu.java.client.TokenOptions;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import javax.validation.constraints.NotNull;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,35 +36,87 @@ public class VideollamadaService {
     public VideollamadaService(@Value("openvidu.url") String OPENVIDU_URL, @Value("openvidu.secret") String SECRET) {
         this.OPENVIDU_URL = OPENVIDU_URL;
         this.SECRET = SECRET;
-        this.openVidu = new OpenVidu(OPENVIDU_URL, SECRET);
+        this.openVidu = new OpenVidu(this.OPENVIDU_URL, this.SECRET);
     }
 
-    public void registerSession(String sessionId, ContactoAgente contacto) {
-        if (sessions.containsKey(sessionId)) {
-            return;
+    /**
+     * Registra una videollamada que esta en peticion de ser contestada.
+     *
+     * @param videollamadaId identificador creado con la info de los
+     * participantes de la videollamada.
+     * @return
+     */
+    public boolean registrarVideollamada(String videollamadaId) {
+        if (sessions.get(videollamadaId) == null) {
+            SesionVideollamada sesionVideollamada = new SesionVideollamada();
+            sesionVideollamada.setVideollamadaId(videollamadaId);
+            sesionVideollamada.setEstado(EstadoVideoLLamada.PETICION);
+            sessions.put(videollamadaId, sesionVideollamada);
+            logger.info("Registro videollamada ok [id=" + videollamadaId + "], cantidad de sesiones " + sessions.size());
+            return true;
         }
-        try {
-            SesionVideollamada sesion = new SesionVideollamada();
-            String serverData = "{\"serverData\": \"" + contacto.getUsuarioOperkall() + "\"}";
-            // --- Build tokenOptions object with the serverData and the role ---
-            TokenOptions tokenOptions = new TokenOptions.Builder()
-                    .data(serverData)
-                    .role(OpenViduRole.MODERATOR)
-                    .build();
+        return false;
+    }
+
+    public void crearSesionVideollamada(String videollamadaId) throws OpenViduJavaClientException, OpenViduHttpException {
+        logger.info("crear sesion para videollamada [id=" +videollamadaId + "] sesiones cantidad = " +sessions.size());
+        SesionVideollamada sesionVideollamada = sessions.get(videollamadaId);
+        if (sesionVideollamada != null) {
+            sesionVideollamada = new SesionVideollamada();
             Session session = this.openVidu.createSession();// --- crear sesion en openvidu server ---
-            String token = session.generateToken(tokenOptions);
-            // --- crear objeto DTO para variables de sesion videollamada ---
-            sesion.setContactoAgente(contacto);
-            sesion.setSessionIdWebsocket(sessionId);
-            sesion.setToken(token);
-            sesion.setSession(session);
-            sessions.put(sessionId, sesion);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            sesionVideollamada.setSession(session);
+            sesionVideollamada.setVideollamadaId(videollamadaId);
+            sesionVideollamada.setEstado(EstadoVideoLLamada.ESTABLECIDA);
+            sessions.put(videollamadaId, sesionVideollamada);
+            logger.info("Sesion OpenVidu creada y asociada a videollamada [id=" + videollamadaId + "], cantidad de sesiones "+ sessions.size());
         }
     }
 
-    public void removeSession(String sessionId) {
+    public String crearTokenVideollamada(String videollamadaId, ContactoAgente contacto) throws OpenViduJavaClientException, OpenViduHttpException {
+        if(videollamadaId == null) {
+            throw new NullPointerException("videollamadId esta en nulo");
+        }
+        SesionVideollamada sesionVideollamada = sessions.get(videollamadaId);
+        if (sesionVideollamada == null) {
+            throw new VideollamadasException("No se puede crear un token en una sesion de videollamada inexistente");
+        }
+        String serverData = "{\"serverData\": \"" + contacto.getUsuarioOperkall() + "\"}";
+        // --- Build tokenOptions object with the serverData and the role ---
+        TokenOptions tokenOptions = new TokenOptions.Builder()
+                .data(serverData)
+                .role(OpenViduRole.MODERATOR)
+                .build();
+        Session sesion = sesionVideollamada.getSession();
+        String token = sesion.generateToken(tokenOptions);
+        sesionVideollamada.agregarParticipante(token, contacto);
+        sessions.put(videollamadaId, sesionVideollamada);
+        logger.info("Token " + token +" asignado a videollamadaId [" + videollamadaId +"], cantidad de sesiones " + sessions.size());
+        return token;
+    }
 
+    public boolean actualizarEstadoVideollamada(String videollamadaId, EstadoVideoLLamada estado) {
+        if (sessions.get(videollamadaId) != null) {
+            sessions.get(videollamadaId).setEstado(estado);
+            return true;
+        }
+        return false;
+    }
+
+    public void removeSession(String videollamadaId) throws OpenViduJavaClientException, OpenViduHttpException {
+        SesionVideollamada sesion = sessions.remove(videollamadaId);
+        sesion.getSession().close();
+    }
+
+    public void removeSessionByWebsocketSessionId(String sessionId) throws OpenViduJavaClientException, OpenViduHttpException {
+        SesionVideollamada sesion = sessions.remove(sessionId);
+        sesion.getSession().close();
+    }
+
+    public String generateVideollamadaId(long emisor, long receptor) {
+        return "from_" + emisor + "_to_" + receptor + "_at_" + System.currentTimeMillis();
+    }
+
+    public int cantidadSesiones() {
+        return sessions.size();
     }
 }

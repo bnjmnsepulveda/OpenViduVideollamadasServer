@@ -1,10 +1,8 @@
 
 package com.adportas.videollamadas.helper;
 
-import com.adportas.videollamadas.websocket.MensajeWebsocket;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 
 /**
@@ -18,6 +16,7 @@ public class JsonHelper {
     
     static {
         gsonBuilder = new GsonBuilder();
+        gsonBuilder.setPrettyPrinting();
         gson = gsonBuilder.create();
     }
     

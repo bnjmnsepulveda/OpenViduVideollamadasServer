@@ -9,7 +9,11 @@ public enum TipoMensaje {
     /**
      * indica que cliente inicia videollamada.
      */
-    VIDEO_LLAMADA,
+    INICIAR_VIDEO_LLAMADA,
+    /**
+     * Indica que un cliente quiere establecer una videollamada con el usuario actual.
+     */
+    SOLICITUD_VIDEO_LLAMADA,
     /**
      * indica que un cliente se registra en el servidor de videollamadas.
      */
@@ -19,7 +23,7 @@ public enum TipoMensaje {
      */
     CANCELAR_LLAMADA,
     /**
-     * Indica que el cliente que recibe una videollamada rechaza atenderal.
+     * Indica que el cliente que recibe una videollamada rechaza atenderla.
      */
     RECHAZAR_LLAMADA,
     /**
@@ -34,7 +38,19 @@ public enum TipoMensaje {
     /**
      * Indica que la videollamada se establecio en estado "EN_CURSO".
      */
-    ESTABLECER_VIDEOLLAMADA;
-    
+    ESTABLECER_VIDEOLLAMADA,
+    /**
+     * Token de sesion necesario en cliente web para establecer una sesion 
+     * con Kurento server.
+     */
+    TOKEN_VIDEOLLAMADA,
+    /**
+     * Indica un error en servidor.
+     */
+    ERROR_SERVIDOR,
+    /**
+     * indica error en videollamada.
+     */
+    ERROR_VIDEOLLAMADA;
     
 }

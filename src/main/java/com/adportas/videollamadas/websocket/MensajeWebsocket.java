@@ -13,6 +13,15 @@ public class MensajeWebsocket<T> {
     private TipoMensaje tipoMensaje;
     private T contenido;
 
+    public MensajeWebsocket() {
+    }
+
+    public MensajeWebsocket(Date fecha, TipoMensaje tipoMensaje, T contenido) {
+        this.fecha = fecha;
+        this.tipoMensaje = tipoMensaje;
+        this.contenido = contenido;
+    }
+    
     public Date getFecha() {
         return fecha;
     }
