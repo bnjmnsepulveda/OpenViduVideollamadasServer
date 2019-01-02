@@ -1,15 +1,16 @@
 package com.adportas.videollamadas.websocket;
 
 import com.adportas.videollamadas.domain.ContactoAgente;
+import com.adportas.videollamadas.domain.SesionVideollamada;
 import com.adportas.videollamadas.enumerated.EstadoVideoLLamada;
 import com.adportas.videollamadas.exceptions.VideollamadasException;
 import com.adportas.videollamadas.helper.JsonHelper;
 import com.adportas.videollamadas.service.VideollamadaService;
 import com.adportas.videollamadas.service.WebsocketService;
+import com.adportas.videollamadas.websocket.mensajes.MensajeCancelarLLamada;
 import com.adportas.videollamadas.websocket.mensajes.MensajeConexionVideoLLamada;
 import com.adportas.videollamadas.websocket.mensajes.MensajeContestarLLamada;
 import com.adportas.videollamadas.websocket.mensajes.MensajeError;
-import com.adportas.videollamadas.websocket.mensajes.MensajeSesionVideoLLamada;
 import com.adportas.videollamadas.websocket.mensajes.MensajeSolicitudVideoLLamada;
 import com.adportas.videollamadas.websocket.mensajes.MensajeVideoLLamada;
 import com.google.gson.JsonObject;
@@ -19,6 +20,7 @@ import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
 import java.lang.reflect.Type;
 import java.util.Date;
+import java.util.Map;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,9 +56,9 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
+        logger.info("Payload=" + payload);
         JsonParser jsonParser = new JsonParser();
         JsonObject jsonObject = (JsonObject) jsonParser.parse(payload);
-        MensajeWebsocket response;
         try {
             String tipoMensaje = jsonObject.get("tipoMensaje").getAsString();
             if (tipoMensaje.equals(TipoMensaje.REGISTRO_USUARIO.name())) {
@@ -76,6 +78,8 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
                                 msg.getContenido().getReceptor().getId());
                 logger.info("Registrando videollamada [id=" + videollamadaId + "]");
                 videollamadaService.registrarVideollamada(videollamadaId);
+                // --- enviar videollamadaId a usuario que inicia llamada ---
+                websocketService.sendMessage(msg.getContenido().getEmisor(), new MensajeWebsocket(new Date(), TipoMensaje.VIDEOLLAMADA_ID_ASIGNADO, videollamadaId));
                 // --- crear peticion a usuario destino  de videollamada ---                
                 MensajeSolicitudVideoLLamada contenidoReceptor = new MensajeSolicitudVideoLLamada();
                 contenidoReceptor.setEmisor(msg.getContenido().getEmisor());
@@ -85,6 +89,7 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
                 websocketService.sendMessage(msg.getContenido().getReceptor(), responseReceptor);// <--- envio mensaje ---
 
             } else if (tipoMensaje.equals(TipoMensaje.CONTESTAR_LLAMADA.name())) {
+                // --- PETICION CONTESTAR LLAMADA ---
                 MensajeWebsocket<MensajeContestarLLamada> request = JsonHelper.convertirObjeto(getTypeMessageContestarVideoLLamada(), payload);
                 String videollamadaId = request.getContenido().getVideollamadaId();
                 logger.info("Se acepto la videollamada [id=" + videollamadaId + "]");
@@ -101,6 +106,15 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
                 websocketService.sendMessage(request.getContenido().getEmisor(), responseEmisor);
                 logger.info("hay " + videollamadaService.cantidadSesiones() + " sesiones de videollamadas");
                 videollamadaService.actualizarEstadoVideollamada(videollamadaId, EstadoVideoLLamada.ESTABLECIDA);
+            } else if (tipoMensaje.equals(TipoMensaje.SOLICITUD_CANCELAR_LLAMADA.name())) {
+                // --- PETICION CANCELAR LLAMADA ---                
+                MensajeWebsocket<MensajeCancelarLLamada> request = JsonHelper.convertirObjeto(getTypeMessageCancelarVideoLLamada(), payload);
+                String videollamadaId = request.getContenido().getVideollamadaId();
+                SesionVideollamada sesion = videollamadaService.buscarSesionVideollamada(videollamadaId);
+                for (ContactoAgente contacto : request.getContenido().getNotificarContactos()) {
+                    websocketService.sendMessage(contacto, new MensajeWebsocket(new Date(), TipoMensaje.CANCELAR_LLAMADA, ""));
+                }
+                videollamadaService.removeSession(videollamadaId);
             }
 
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
@@ -130,6 +144,12 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
 
     public Type getTypeMessageContestarVideoLLamada() {
         Type type = new TypeToken<MensajeWebsocket<MensajeContestarLLamada>>() {
+        }.getType();
+        return type;
+    }
+
+    public Type getTypeMessageCancelarVideoLLamada() {
+        Type type = new TypeToken<MensajeWebsocket<MensajeCancelarLLamada>>() {
         }.getType();
         return type;
     }

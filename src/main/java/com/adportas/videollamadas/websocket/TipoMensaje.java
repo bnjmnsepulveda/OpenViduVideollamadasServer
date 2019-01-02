@@ -15,9 +15,17 @@ public enum TipoMensaje {
      */
     SOLICITUD_VIDEO_LLAMADA,
     /**
+     * Indica el videollamadaId asignado a la llamada actual.
+     */
+    VIDEOLLAMADA_ID_ASIGNADO,
+    /**
      * indica que un cliente se registra en el servidor de videollamadas.
      */
     REGISTRO_USUARIO,
+    /**
+     * se envia peticion para cancelar videollamada.
+     */
+    SOLICITUD_CANCELAR_LLAMADA,
     /**
      * Indica que el usuario que realiza la llamada , la cancela.
      */

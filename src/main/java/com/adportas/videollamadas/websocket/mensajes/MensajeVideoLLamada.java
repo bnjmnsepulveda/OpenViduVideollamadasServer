@@ -9,16 +9,16 @@ import com.adportas.videollamadas.domain.ContactoAgente;
  */
 public class MensajeVideoLLamada {
 
-    String idLLamada;
+    String videollamadaId;
     ContactoAgente emisor;
     ContactoAgente receptor;
 
-    public String getIdLLamada() {
-        return idLLamada;
+    public String getVideollamadaId() {
+        return videollamadaId;
     }
 
-    public void setIdLLamada(String idLLamada) {
-        this.idLLamada = idLLamada;
+    public void setVideollamadaId(String videollamadaId) {
+        this.videollamadaId = videollamadaId;
     }
 
     public ContactoAgente getEmisor() {
