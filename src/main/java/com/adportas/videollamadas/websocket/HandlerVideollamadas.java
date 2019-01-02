@@ -11,6 +11,7 @@ import com.adportas.videollamadas.websocket.mensajes.MensajeCancelarLLamada;
 import com.adportas.videollamadas.websocket.mensajes.MensajeConexionVideoLLamada;
 import com.adportas.videollamadas.websocket.mensajes.MensajeContestarLLamada;
 import com.adportas.videollamadas.websocket.mensajes.MensajeError;
+import com.adportas.videollamadas.websocket.mensajes.MensajeSimple;
 import com.adportas.videollamadas.websocket.mensajes.MensajeSolicitudVideoLLamada;
 import com.adportas.videollamadas.websocket.mensajes.MensajeVideoLLamada;
 import com.google.gson.JsonObject;
@@ -19,8 +20,9 @@ import com.google.gson.reflect.TypeToken;
 import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Map;
+import java.util.List;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,9 +69,10 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
                 websocketService.registerUser(session.getId(), msg.getContenido());
                 logger.info("Usuario " + msg.getContenido().getUsuarioOperkall() + " registrado en sesion websocket [id=" + session.getId() + "]");
             } else if (tipoMensaje.equals(TipoMensaje.INICIAR_VIDEO_LLAMADA.name())) {
+
                 // --- PETICION INICIAR VIDEOLLAMADA ---
                 MensajeWebsocket<MensajeVideoLLamada> msg = JsonHelper.convertirObjeto(getTypeMessageVideoLLamada(), payload);
-                logger.info("Iniciar videollamada [ emisor="
+                logger.info("Iniciar videollamada [emisor="
                         + msg.getContenido().getEmisor().getUsuarioOperkall()
                         + ", receptor=" + msg.getContenido().getReceptor().getUsuarioOperkall() + "]");
                 // --- generar id unico de videollamada ---
@@ -87,7 +90,29 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
                 contenidoReceptor.setVideollamadaId(videollamadaId);
                 MensajeWebsocket responseReceptor = new MensajeWebsocket(new Date(), TipoMensaje.SOLICITUD_VIDEO_LLAMADA, contenidoReceptor);
                 websocketService.sendMessage(msg.getContenido().getReceptor(), responseReceptor);// <--- envio mensaje ---
-
+                // --- Creando timeout para videollamada ---
+                List<ContactoAgente> participantes = new ArrayList();
+                participantes.add(msg.getContenido().getEmisor());
+                participantes.add(msg.getContenido().getReceptor());
+                Thread timeoutVideollamada = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(10000);
+                        } catch (Exception e) {
+                        }
+                        try {
+                            logger.warn("Timeout videollamada " + videollamadaId);
+                            for (ContactoAgente participante : participantes) {
+                                MensajeSimple contenido = new MensajeSimple("Expiro el tiempo de videollamada");
+                                websocketService.sendMessage(participante, new MensajeWebsocket(new Date(), TipoMensaje.TIMEOUT_LLAMADA, contenido));
+                            }
+                        } catch (Exception e) {
+                            logger.error(e.getMessage());
+                        }
+                    }
+                });
+                timeoutVideollamada.start();
             } else if (tipoMensaje.equals(TipoMensaje.CONTESTAR_LLAMADA.name())) {
                 // --- PETICION CONTESTAR LLAMADA ---
                 MensajeWebsocket<MensajeContestarLLamada> request = JsonHelper.convertirObjeto(getTypeMessageContestarVideoLLamada(), payload);
