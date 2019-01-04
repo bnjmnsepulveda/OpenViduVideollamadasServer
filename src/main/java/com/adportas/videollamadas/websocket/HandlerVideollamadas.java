@@ -102,10 +102,13 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
                         } catch (Exception e) {
                         }
                         try {
-                            logger.warn("Timeout videollamada " + videollamadaId);
-                            for (ContactoAgente participante : participantes) {
-                                MensajeSimple contenido = new MensajeSimple("Expiro el tiempo de videollamada");
-                                websocketService.sendMessage(participante, new MensajeWebsocket(new Date(), TipoMensaje.TIMEOUT_LLAMADA, contenido));
+                            SesionVideollamada sesion = videollamadaService.buscarSesionVideollamada(videollamadaId);
+                            if (sesion != null && sesion.getEstado() == EstadoVideoLLamada.PETICION) {
+                                logger.warn("Timeout videollamada " + videollamadaId);
+                                for (ContactoAgente participante : participantes) {
+                                    MensajeSimple contenido = new MensajeSimple("Expiro el tiempo de videollamada");
+                                    websocketService.sendMessage(participante, new MensajeWebsocket(new Date(), TipoMensaje.TIMEOUT_LLAMADA, contenido));
+                                }
                             }
                         } catch (Exception e) {
                             logger.error(e.getMessage());
