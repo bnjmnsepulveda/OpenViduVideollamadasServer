@@ -53,7 +53,16 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         logger.info("Removiendo sesion [" + session.getId() + "]");
+        SesionWebsocket sesionCerrada = websocketService.findSesionWebsocketBySeessionId(session.getId());
         websocketService.removeSession(session);
+        if (sesionCerrada != null) {
+            String contenido = sesionCerrada.getContactoAgente().getUsuarioOperkall() + " se ha desconectado";
+            logger.info(contenido);
+            MensajeWebsocket<MensajeSimple> broadcasting = new MensajeWebsocket<>(TipoMensaje.ACTUALIZAR_CONTACTOS);
+            broadcasting.setContenido(new MensajeSimple(contenido));
+            websocketService.sendBroadcastMessage(broadcasting);
+        }
+
     }
 
     @Override
@@ -69,6 +78,10 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
                 MensajeWebsocket<ContactoAgente> msg = JsonHelper.convertirObjeto(getTypeMessageRegistroUsuario(), payload);
                 websocketService.registerUser(session.getId(), msg.getContenido());
                 logger.info("Usuario " + msg.getContenido().getUsuarioOperkall() + " registrado en sesion websocket [id=" + session.getId() + "]");
+                logger.info("Se enviara mensaje de nuevo usuario en linea");
+                MensajeWebsocket<MensajeSimple> broadcasting = new MensajeWebsocket<>(TipoMensaje.ACTUALIZAR_CONTACTOS);
+                broadcasting.setContenido(new MensajeSimple(msg.getContenido().getUsuarioOperkall() + " en linea"));
+                websocketService.sendBroadcastMessage(broadcasting);
             } else if (tipoMensaje.equals(TipoMensaje.INICIAR_VIDEO_LLAMADA.name())) {
 
                 // --- PETICION INICIAR VIDEOLLAMADA ---

@@ -61,7 +61,14 @@ public class WebsocketService implements IWebsocketService<MensajeWebsocket> {
 
     @Override
     public void sendBroadcastMessage(MensajeWebsocket mensaje) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        sessions.forEach((sessionId, sesion) -> {
+            try {
+                String json = JsonHelper.convertirJson(mensaje);
+                sesion.getSession().sendMessage(new TextMessage(json));
+            } catch (IOException e) {
+                logger.warn("Mensaje bradcasting no pudo se enviado a sesion websocket [id="+ sessionId + "]");
+            }
+        });
     }
 
     public SesionWebsocket findSesionWebsocketByContacto(ContactoAgente contacto) {
@@ -87,5 +94,10 @@ public class WebsocketService implements IWebsocketService<MensajeWebsocket> {
             contactos.add(value.getContactoAgente());
         });
         return contactos;
+    }
+
+    @Override
+    public SesionWebsocket findSesionWebsocketBySeessionId(String sessionId) {
+        return sessions.get(sessionId);
     }
 }

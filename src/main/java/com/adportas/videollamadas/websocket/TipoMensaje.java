@@ -63,6 +63,11 @@ public enum TipoMensaje {
     /**
      * indica error en videollamada.
      */
-    ERROR_VIDEOLLAMADA;
+    ERROR_VIDEOLLAMADA,
+    /**
+     * avisa que se debe actualizar la lista de contactos.
+     */
+    ACTUALIZAR_CONTACTOS;
+    
     
 }

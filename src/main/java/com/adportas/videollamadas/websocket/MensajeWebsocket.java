@@ -16,6 +16,10 @@ public class MensajeWebsocket<T> {
     public MensajeWebsocket() {
     }
 
+    public MensajeWebsocket(TipoMensaje tipoMensaje) {
+        this.tipoMensaje = tipoMensaje;
+    }
+    
     public MensajeWebsocket(TipoMensaje tipoMensaje, T contenido) {
         this.fecha = new java.util.Date();
         this.tipoMensaje = tipoMensaje;
