@@ -40,7 +40,7 @@ public class ContactoAgenteDAO implements IContactoAgenteDAO {
             agente.setId(rs.getLong("id"));
             agente.setNombre(rs.getString("nombre"));
             agente.setApellido(rs.getString("apellido_agente"));
-            agente.setEnLinea(true);
+            agente.setEnLinea(false);
             agente.setUsuarioOperkall(rs.getString("usuario_operkall"));
             return agente;
         }

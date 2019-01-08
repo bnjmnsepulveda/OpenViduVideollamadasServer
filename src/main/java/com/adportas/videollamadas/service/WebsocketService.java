@@ -6,8 +6,10 @@ import com.adportas.videollamadas.service.interfaces.IWebsocketService;
 import com.adportas.videollamadas.websocket.MensajeWebsocket;
 import com.adportas.videollamadas.websocket.SesionWebsocket;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -35,6 +37,7 @@ public class WebsocketService implements IWebsocketService<MensajeWebsocket> {
     public void registerUser(String sessionId, ContactoAgente contactoAgente) {
         if (sessions.containsKey(sessionId)) {
             SesionWebsocket sesion = sessions.get(sessionId);
+            contactoAgente.setEnLinea(true);
             sesion.setContactoAgente(contactoAgente);
             sessions.put(sessionId, sesion);
         }
@@ -76,5 +79,13 @@ public class WebsocketService implements IWebsocketService<MensajeWebsocket> {
             return sesion.getContactoAgente();
         }
         return null;
+    }
+
+    public List<ContactoAgente> findContactosEnLinea() {
+        List<ContactoAgente> contactos = new ArrayList();
+        sessions.forEach((key, value) -> {
+            contactos.add(value.getContactoAgente());
+        });
+        return contactos;
     }
 }
