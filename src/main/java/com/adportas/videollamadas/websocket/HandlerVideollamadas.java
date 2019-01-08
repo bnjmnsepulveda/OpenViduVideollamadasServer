@@ -143,6 +143,12 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
                     websocketService.sendMessage(contacto, new MensajeWebsocket(new Date(), TipoMensaje.CANCELAR_LLAMADA, ""));
                 }
                 videollamadaService.removeSession(videollamadaId);
+            } else if (tipoMensaje.equals(TipoMensaje.TERMINAR_VIDEOLLAMADA.name())) {
+                // --- PETICION TERMINAR VIDEOLLAMADA ---
+                MensajeWebsocket<MensajeSimple> request =  JsonHelper.convertirObjeto(getTypeMessageMensajeSimple(), payload);
+                String videollamadaId = request.getContenido().getMensaje();
+                logger.info("terminando videollamada [id=" + videollamadaId + "]");
+                videollamadaService.removeSession(videollamadaId);
             }
 
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
@@ -181,5 +187,12 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
         }.getType();
         return type;
     }
+    
+    public Type getTypeMessageMensajeSimple() {
+        Type type = new TypeToken<MensajeWebsocket<MensajeSimple>>() {
+        }.getType();
+        return type;
+    }
+    
 
 }

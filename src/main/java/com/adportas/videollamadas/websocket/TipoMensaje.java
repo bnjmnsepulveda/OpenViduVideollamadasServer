@@ -48,6 +48,10 @@ public enum TipoMensaje {
      */
     ESTABLECER_VIDEOLLAMADA,
     /**
+     * Estblece el fin de la videollamada.
+     */
+    TERMINAR_VIDEOLLAMADA,
+    /**
      * Token de sesion necesario en cliente web para establecer una sesion 
      * con Kurento server.
      */
