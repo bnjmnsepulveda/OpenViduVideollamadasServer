@@ -79,7 +79,9 @@ public class VideollamadaService {
     }
 
     /**
-     * Crea un token de videollamada asociado a una videollamadaId.
+     * Crea un token de videollamada asociado a una videollamadaId, 
+     * tambien crea una Sesion openvidu {@link SesionVideoLlamada} y agrega 
+     * los participantes a la sesion de videollamada {@link SesionVideoLlamada} creada.
      *
      * @param videollamadaId
      * @param contacto

@@ -148,11 +148,20 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
                 websocketService.sendMessage(request.getContenido().getEmisor(), responseEmisor);
                 logger.info("hay " + videollamadaService.cantidadSesiones() + " sesiones de videollamadas");
                 videollamadaService.actualizarEstadoVideollamada(videollamadaId, EstadoVideoLLamada.ESTABLECIDA);
+            } else if (tipoMensaje.equals(TipoMensaje.RECHAZAR_VIDEOLLAMADA.name())) {
+                // --- PETICION RECHAZAR VIDEOLLAMADA ---
+                MensajeWebsocket<MensajeCancelarLLamada> request = JsonHelper.convertirObjeto(getTypeMessageCancelarVideoLLamada(), payload);
+                String videollamadaId = request.getContenido().getVideollamadaId();
+                if (request.getContenido().getNotificarContactos() != null) {
+                    for (ContactoAgente contacto : request.getContenido().getNotificarContactos()) {
+                        websocketService.sendMessage(contacto, new MensajeWebsocket(new Date(), TipoMensaje.RECHAZAR_VIDEOLLAMADA, new MensajeSimple("Videollamada rechazada")));
+                    }
+                    videollamadaService.removeSession(videollamadaId);
+                }
             } else if (tipoMensaje.equals(TipoMensaje.SOLICITUD_CANCELAR_LLAMADA.name())) {
                 // --- PETICION CANCELAR LLAMADA ---                
                 MensajeWebsocket<MensajeCancelarLLamada> request = JsonHelper.convertirObjeto(getTypeMessageCancelarVideoLLamada(), payload);
                 String videollamadaId = request.getContenido().getVideollamadaId();
-                SesionVideollamada sesion = videollamadaService.buscarSesionVideollamada(videollamadaId);
                 for (ContactoAgente contacto : request.getContenido().getNotificarContactos()) {
                     websocketService.sendMessage(contacto, new MensajeWebsocket(new Date(), TipoMensaje.CANCELAR_LLAMADA, ""));
                 }

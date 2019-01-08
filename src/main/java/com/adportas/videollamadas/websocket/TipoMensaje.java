@@ -33,7 +33,7 @@ public enum TipoMensaje {
     /**
      * Indica que el cliente que recibe una videollamada rechaza atenderla.
      */
-    RECHAZAR_LLAMADA,
+    RECHAZAR_VIDEOLLAMADA,
     /**
      * Tiempo de espera terminado de una videollamada, el servidor elimina la
      * videollamada en memoria.

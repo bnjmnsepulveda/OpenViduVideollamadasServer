@@ -83,7 +83,7 @@ module.exports = ".contenedor-app {\n    position: absolute;\n    width: 100%;\n
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<!--The content below is only a placeholder and can be replaced.-->\n<div class=\"contenedor-app\">\n  <div class=\"contenedor-titulo\">\n    <div>\n      <img src=\"/assets/img/logo-web-chat.svg\" width=\"60\" height=\"60\" />\n    </div>\n    <div><h3 style=\"margin-left: 20px;\">VideoLLamadas cckall</h3></div>\n  </div>\n  <!--SIDEBAR LEFT contactos de app cckall -->\n  <div class=\"contenedor-contactos\">\n    <app-contactos\n      *ngIf=\"conectado\"\n      [contactos]=\"contactos\"\n      (videollamadaContacto)=\"onVideollamadaContacto($event)\"\n      (seleccionarContacto)=\"onSeleccionarContacto($event)\"\n    >\n    </app-contactos>\n  </div>\n  <!--CONTENIDO DINAMICO-->\n  <div *ngIf=\"conectado\" class=\"contenedor-principal\">\n    <router-outlet></router-outlet>\n  </div>\n  <!--PANEL DE INICIO DE SESION-->\n  <app-inicio\n    *ngIf=\"!conectado\"\n    (iniciarSesion)=\"iniciarSesion($event)\"\n  ></app-inicio>\n  <!--NOTIFICACION PARA VIDEOLLAMADA ENTRANTE O SALIENTE-->\n  <div class=\"contenedor-videocalling\">\n    <app-video-calling\n      [visible]=\"videoCallingVisible\"\n      [saliente]=\"saliente\"\n      [videollamada]=\"videollamada\"\n      [nombreContacto]=\"nombreContacto\"\n      [nombreContacto]=\"testing\"\n      (contestarLLamada)=\"onContestarLLamada($event)\"\n      (cancelarLLamada)=\"onCancelarLLamada($event)\"\n    >\n    </app-video-calling>\n  </div>\n</div>\n"
+module.exports = "<!--The content below is only a placeholder and can be replaced.-->\n<div class=\"contenedor-app\">\n  <div class=\"contenedor-titulo\">\n    <div>\n      <img src=\"/assets/img/logo-web-chat.svg\" width=\"60\" height=\"60\" />\n    </div>\n    <div><h3 style=\"margin-left: 20px;\">VideoLLamadas cckall</h3></div>\n  </div>\n  <!--SIDEBAR LEFT contactos de app cckall -->\n  <div class=\"contenedor-contactos\">\n    <app-contactos\n      *ngIf=\"conectado\"\n      [contactos]=\"contactos\"\n      (videollamadaContacto)=\"onVideollamadaContacto($event)\"\n      (seleccionarContacto)=\"onSeleccionarContacto($event)\"\n    >\n    </app-contactos>\n  </div>\n  <!--CONTENIDO DINAMICO-->\n  <div *ngIf=\"conectado\" class=\"contenedor-principal\">\n    <router-outlet></router-outlet>\n  </div>\n  <!--PANEL DE INICIO DE SESION-->\n  <app-inicio\n    *ngIf=\"!conectado\"\n    (iniciarSesion)=\"iniciarSesion($event)\"\n  ></app-inicio>\n  <!--NOTIFICACIONES GENERALES DE LA APP-->\n  <app-notificacion></app-notificacion>\n  <!--NOTIFICACION PARA VIDEOLLAMADA ENTRANTE O SALIENTE-->\n  <div class=\"contenedor-videocalling\">\n    <app-video-calling\n      [visible]=\"videoCallingVisible\"\n      [saliente]=\"saliente\"\n      [videollamada]=\"videollamada\"\n      [nombreContacto]=\"nombreContacto\"\n      [nombreContacto]=\"testing\"\n    >\n    </app-video-calling>\n  </div>\n</div>\n"
 
 /***/ }),
 
@@ -106,6 +106,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _service_websocket_service__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./service/websocket.service */ "./src/app/service/websocket.service.ts");
 /* harmony import */ var _domain_websocket_domain__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./domain/websocket.domain */ "./src/app/domain/websocket.domain.ts");
 /* harmony import */ var _service_session_service__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./service/session.service */ "./src/app/service/session.service.ts");
+/* harmony import */ var _service_video_llamada_service__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./service/video-llamada.service */ "./src/app/service/video-llamada.service.ts");
+/* harmony import */ var _service_notificacion_service__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./service/notificacion.service */ "./src/app/service/notificacion.service.ts");
+
+
 
 
 
@@ -116,11 +120,13 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var AppComponent = /** @class */ (function () {
-    function AppComponent(router, contactoAgenteService, websocketService, sesionService) {
+    function AppComponent(router, contactoAgenteService, websocketService, sesionService, videollamadaService, notificacionService) {
         this.router = router;
         this.contactoAgenteService = contactoAgenteService;
         this.websocketService = websocketService;
         this.sesionService = sesionService;
+        this.videollamadaService = videollamadaService;
+        this.notificacionService = notificacionService;
         // --- propiedades para identificar usuario actual de app ---
         this.idAgente = 18362;
         this.conectado = false;
@@ -196,34 +202,8 @@ var AppComponent = /** @class */ (function () {
             console.log('Warning', 'No hay conexion establecida con servicio de videollamadas!!!');
         }
     };
-    AppComponent.prototype.onCancelarLLamada = function (videollamada) {
-        /*console.log('Se ha cancelado llamada ' + videollamada.videollamadaId);
-        this.videoCallingVisible = false;
-        const contenido = {
-          tipoMensaje: TipoMensaje.SOLICITUD_CANCELAR_LLAMADA,
-          contenido:  {
-            videollamadaId: videollamada.videollamadaId,
-            notificarContactos: [
-              videollamada.emisor,
-              videollamada.receptor
-            ]
-          }
-        };
-        this.websocketService.enviarContenidoMensajeWebsocket(contenido);*/
-    };
-    AppComponent.prototype.onContestarLLamada = function (videollamada) {
-        console.log('contestando llamada ' + videollamada.emisor.usuarioOperkall);
-        var req = new _domain_websocket_domain__WEBPACK_IMPORTED_MODULE_7__["MensajeWebsocket"]();
-        req.contenido = {
-            videollamadaId: videollamada.videollamadaId,
-            emisor: videollamada.emisor,
-            receptor: videollamada.receptor
-        };
-        req.fecha = new Date();
-        req.tipoMensaje = _domain_websocket_domain__WEBPACK_IMPORTED_MODULE_7__["TipoMensaje"].CONTESTAR_LLAMADA;
-        this.websocketService.enviarMensajeWebsocket(req);
-    };
     AppComponent.prototype.processMensajeWebsocket = function (mensaje) {
+        var _this = this;
         console.log('Procesar mensaje ' + JSON.stringify(mensaje));
         switch (mensaje.tipoMensaje) {
             // --- token openvidu para integrarse a una videollamada ---
@@ -259,8 +239,34 @@ var AppComponent = /** @class */ (function () {
                 this.videollamada = undefined;
                 alert(mensaje.contenido.mensaje);
                 break;
+            // --- Videollamada Terminada ---
+            case _domain_websocket_domain__WEBPACK_IMPORTED_MODULE_7__["TipoMensaje"].TERMINAR_VIDEOLLAMADA:
+                this.videollamadaService.disconnectVideollamadaSession();
+                alert(mensaje.contenido.mensaje);
+                this.router.navigate(['']);
+                break;
+            // --- Actualizacion contactos ---
+            case _domain_websocket_domain__WEBPACK_IMPORTED_MODULE_7__["TipoMensaje"].ACTUALIZAR_CONTACTOS:
+                var subscribeContactos$_1 = this.contactoAgenteService.buscarTodosContactoAgente()
+                    .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["map"])(function (contactos) {
+                    return contactos.filter(function (c) { return c.id !== _this.usuarioApp.id; });
+                })).subscribe(function (contactos) {
+                    _this.contactos = contactos;
+                    subscribeContactos$_1.unsubscribe();
+                });
+                this.notificacionService.infoAlert(mensaje.contenido.mensaje);
+                break;
         }
     };
+    AppComponent.prototype.windowBeforeUnload = function () {
+        this.subscripcionMensajesWs.unsubscribe();
+    };
+    tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["HostListener"])('window:beforeunload'),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:type", Function),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", []),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:returntype", void 0)
+    ], AppComponent.prototype, "windowBeforeUnload", null);
     AppComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
             selector: 'app-root',
@@ -270,7 +276,9 @@ var AppComponent = /** @class */ (function () {
         tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [_angular_router__WEBPACK_IMPORTED_MODULE_3__["Router"],
             _service_contacto_agente_service__WEBPACK_IMPORTED_MODULE_2__["ContactoAgenteService"],
             _service_websocket_service__WEBPACK_IMPORTED_MODULE_6__["WebsocketService"],
-            _service_session_service__WEBPACK_IMPORTED_MODULE_8__["SessionService"]])
+            _service_session_service__WEBPACK_IMPORTED_MODULE_8__["SessionService"],
+            _service_video_llamada_service__WEBPACK_IMPORTED_MODULE_9__["VideoLlamadaService"],
+            _service_notificacion_service__WEBPACK_IMPORTED_MODULE_10__["NotificacionService"]])
     ], AppComponent);
     return AppComponent;
 }());
@@ -306,6 +314,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _component_video_calling_video_calling_component__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./component/video-calling/video-calling.component */ "./src/app/component/video-calling/video-calling.component.ts");
 /* harmony import */ var _component_layout_videollamada_layout_videollamada_component__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./component/layout-videollamada/layout-videollamada.component */ "./src/app/component/layout-videollamada/layout-videollamada.component.ts");
 /* harmony import */ var _component_home_home_component__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./component/home/home.component */ "./src/app/component/home/home.component.ts");
+/* harmony import */ var _component_notificacion_notificacion_component__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./component/notificacion/notificacion.component */ "./src/app/component/notificacion/notificacion.component.ts");
+
 
 
 
@@ -337,7 +347,8 @@ var AppModule = /** @class */ (function () {
                 _component_user_video_user_video_component__WEBPACK_IMPORTED_MODULE_13__["UserVideoComponent"],
                 _component_video_calling_video_calling_component__WEBPACK_IMPORTED_MODULE_14__["VideoCallingComponent"],
                 _component_layout_videollamada_layout_videollamada_component__WEBPACK_IMPORTED_MODULE_15__["LayoutVideollamadaComponent"],
-                _component_home_home_component__WEBPACK_IMPORTED_MODULE_16__["HomeComponent"]
+                _component_home_home_component__WEBPACK_IMPORTED_MODULE_16__["HomeComponent"],
+                _component_notificacion_notificacion_component__WEBPACK_IMPORTED_MODULE_17__["NotificacionComponent"]
             ],
             imports: [
                 _angular_platform_browser__WEBPACK_IMPORTED_MODULE_1__["BrowserModule"],
@@ -425,7 +436,7 @@ var ChatComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = ".componente-contactos{\n    background-color: #e9f0f3;\n    height: 100%;\n    padding-top: 20px; \n}\n\n.titulo-contactos{\n    text-align: center;\n    margin-top: 20px;\n    margin-bottom: 20px;\n}\n\n.item-contacto{\n    margin: 10px;\n    margin-top: 10px;\n}\n\n.nombre-contacto{\n    cursor: pointer;\n    width: 240px;\n    display: inline-block;\n}\n\n.span-videollamada{\n    color: green; \n    cursor: pointer;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvY29tcG9uZW50L2NvbnRhY3Rvcy9jb250YWN0b3MuY29tcG9uZW50LmNzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtJQUNJLDBCQUEwQjtJQUMxQixhQUFhO0lBQ2Isa0JBQWtCO0NBQ3JCOztBQUVEO0lBQ0ksbUJBQW1CO0lBQ25CLGlCQUFpQjtJQUNqQixvQkFBb0I7Q0FDdkI7O0FBRUQ7SUFDSSxhQUFhO0lBQ2IsaUJBQWlCO0NBQ3BCOztBQUVEO0lBQ0ksZ0JBQWdCO0lBQ2hCLGFBQWE7SUFDYixzQkFBc0I7Q0FDekI7O0FBRUQ7SUFDSSxhQUFhO0lBQ2IsZ0JBQWdCO0NBQ25CIiwiZmlsZSI6InNyYy9hcHAvY29tcG9uZW50L2NvbnRhY3Rvcy9jb250YWN0b3MuY29tcG9uZW50LmNzcyIsInNvdXJjZXNDb250ZW50IjpbIi5jb21wb25lbnRlLWNvbnRhY3Rvc3tcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiAjZTlmMGYzO1xuICAgIGhlaWdodDogMTAwJTtcbiAgICBwYWRkaW5nLXRvcDogMjBweDsgXG59XG5cbi50aXR1bG8tY29udGFjdG9ze1xuICAgIHRleHQtYWxpZ246IGNlbnRlcjtcbiAgICBtYXJnaW4tdG9wOiAyMHB4O1xuICAgIG1hcmdpbi1ib3R0b206IDIwcHg7XG59XG5cbi5pdGVtLWNvbnRhY3Rve1xuICAgIG1hcmdpbjogMTBweDtcbiAgICBtYXJnaW4tdG9wOiAxMHB4O1xufVxuXG4ubm9tYnJlLWNvbnRhY3Rve1xuICAgIGN1cnNvcjogcG9pbnRlcjtcbiAgICB3aWR0aDogMjQwcHg7XG4gICAgZGlzcGxheTogaW5saW5lLWJsb2NrO1xufVxuXG4uc3Bhbi12aWRlb2xsYW1hZGF7XG4gICAgY29sb3I6IGdyZWVuOyBcbiAgICBjdXJzb3I6IHBvaW50ZXI7XG59Il19 */"
+module.exports = "ul {\n  list-style: none;\n}\n\n.componente-contactos {\n  background-color: #e9f0f3;\n  height: 100%;\n  padding-top: 20px;\n}\n\n.titulo-contactos {\n  text-align: center;\n  margin-top: 20px;\n  margin-bottom: 20px;\n}\n\n.item-contacto {\n  margin: 10px;\n  margin-top: 10px;\n}\n\n.nombre-contacto {\n  cursor: pointer;\n  width: 240px;\n  display: inline-block;\n}\n\n.span-videollamada {\n  color: green;\n  cursor: pointer;\n}\n\n.span-desconectado {\n  color: red;\n  cursor: not-allowed;\n}\n\n.chat-conectado {\n  color: green;\n  cursor: pointer;\n}\n\n.chat-desconectado {\n  cursor: pointer;\n  color: grey;\n}\n\n.circulo-contacto-conectado {\n  background: #5cb85c;\n  width: 20px;\n  height: 20px;\n  margin: 5px;\n}\n\n.circulo-contacto-desconectado {\n  background: #b04e29;\n  width: 20px;\n  height: 20px;\n  margin: 5px;\n}\n\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvY29tcG9uZW50L2NvbnRhY3Rvcy9jb250YWN0b3MuY29tcG9uZW50LmNzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtFQUNFLGlCQUFpQjtDQUNsQjs7QUFFRDtFQUNFLDBCQUEwQjtFQUMxQixhQUFhO0VBQ2Isa0JBQWtCO0NBQ25COztBQUVEO0VBQ0UsbUJBQW1CO0VBQ25CLGlCQUFpQjtFQUNqQixvQkFBb0I7Q0FDckI7O0FBRUQ7RUFDRSxhQUFhO0VBQ2IsaUJBQWlCO0NBQ2xCOztBQUVEO0VBQ0UsZ0JBQWdCO0VBQ2hCLGFBQWE7RUFDYixzQkFBc0I7Q0FDdkI7O0FBRUQ7RUFDRSxhQUFhO0VBQ2IsZ0JBQWdCO0NBQ2pCOztBQUVEO0VBQ0UsV0FBVztFQUNYLG9CQUFvQjtDQUNyQjs7QUFFRDtFQUNFLGFBQWE7RUFDYixnQkFBZ0I7Q0FDakI7O0FBRUQ7RUFDRSxnQkFBZ0I7RUFDaEIsWUFBWTtDQUNiOztBQUVEO0VBQ0Usb0JBQW9CO0VBQ3BCLFlBQVk7RUFDWixhQUFhO0VBQ2IsWUFBWTtDQUNiOztBQUVEO0VBQ0Usb0JBQW9CO0VBQ3BCLFlBQVk7RUFDWixhQUFhO0VBQ2IsWUFBWTtDQUNiIiwiZmlsZSI6InNyYy9hcHAvY29tcG9uZW50L2NvbnRhY3Rvcy9jb250YWN0b3MuY29tcG9uZW50LmNzcyIsInNvdXJjZXNDb250ZW50IjpbInVsIHtcbiAgbGlzdC1zdHlsZTogbm9uZTtcbn1cblxuLmNvbXBvbmVudGUtY29udGFjdG9zIHtcbiAgYmFja2dyb3VuZC1jb2xvcjogI2U5ZjBmMztcbiAgaGVpZ2h0OiAxMDAlO1xuICBwYWRkaW5nLXRvcDogMjBweDtcbn1cblxuLnRpdHVsby1jb250YWN0b3Mge1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIG1hcmdpbi10b3A6IDIwcHg7XG4gIG1hcmdpbi1ib3R0b206IDIwcHg7XG59XG5cbi5pdGVtLWNvbnRhY3RvIHtcbiAgbWFyZ2luOiAxMHB4O1xuICBtYXJnaW4tdG9wOiAxMHB4O1xufVxuXG4ubm9tYnJlLWNvbnRhY3RvIHtcbiAgY3Vyc29yOiBwb2ludGVyO1xuICB3aWR0aDogMjQwcHg7XG4gIGRpc3BsYXk6IGlubGluZS1ibG9jaztcbn1cblxuLnNwYW4tdmlkZW9sbGFtYWRhIHtcbiAgY29sb3I6IGdyZWVuO1xuICBjdXJzb3I6IHBvaW50ZXI7XG59XG5cbi5zcGFuLWRlc2NvbmVjdGFkbyB7XG4gIGNvbG9yOiByZWQ7XG4gIGN1cnNvcjogbm90LWFsbG93ZWQ7XG59XG5cbi5jaGF0LWNvbmVjdGFkbyB7XG4gIGNvbG9yOiBncmVlbjtcbiAgY3Vyc29yOiBwb2ludGVyO1xufVxuXG4uY2hhdC1kZXNjb25lY3RhZG8ge1xuICBjdXJzb3I6IHBvaW50ZXI7XG4gIGNvbG9yOiBncmV5O1xufVxuXG4uY2lyY3Vsby1jb250YWN0by1jb25lY3RhZG8ge1xuICBiYWNrZ3JvdW5kOiAjNWNiODVjO1xuICB3aWR0aDogMjBweDtcbiAgaGVpZ2h0OiAyMHB4O1xuICBtYXJnaW46IDVweDtcbn1cblxuLmNpcmN1bG8tY29udGFjdG8tZGVzY29uZWN0YWRvIHtcbiAgYmFja2dyb3VuZDogI2IwNGUyOTtcbiAgd2lkdGg6IDIwcHg7XG4gIGhlaWdodDogMjBweDtcbiAgbWFyZ2luOiA1cHg7XG59XG4iXX0= */"
 
 /***/ }),
 
@@ -436,7 +447,7 @@ module.exports = ".componente-contactos{\n    background-color: #e9f0f3;\n    he
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"componente-contactos\">\n<h3 class=\"titulo-contactos\">Lista de contactos</h3>\n <ul class=\"lista-contactos\">\n  <li *ngFor=\"let contacto of contactos\" class=\"item-contacto\" >\n    <span (click)=\"onSeleccionarContacto(contacto)\" \n          class=\"nombre-contacto\" >{{contacto.id}} -  {{contacto.nombre}}  {{contacto.apellido}}</span>\n\n    <span (click)=\"onVideollamada(contacto)\" \n    class=\"span-videollamada\" >videollamada</span>\n    <div class=\"linea-separadora-hotizontal\"></div>\n  </li>\n</ul> \n</div>\n"
+module.exports = "<div class=\"componente-contactos\">\n  <h3 class=\"titulo-contactos\">Lista de contactos</h3>\n  <ul class=\"lista-contactos\">\n    <li *ngFor=\"let contacto of contactos\" class=\"item-contacto\">\n      <div [ngClass]=\"{'circulo': true, 'circulo-contacto-desconectado': !contacto.enLinea,'circulo-contacto-conectado': contacto.enLinea}\"></div>\n      <!--info de contacto-->\n      <span (click)=\"onSeleccionarContacto(contacto)\" class=\"nombre-contacto\"\n        >{{ contacto.id }} - {{ contacto.nombre }} {{ contacto.apellido }}\n      </span>\n      <span (click)=\"onChat(contacto)\" \n      [ngClass]=\"{'chat-desconectado': !contacto.enLinea,'chat-conectado': contacto.enLinea}\">chat </span>\n      <!--validacion contacto en linea para elegir el ng-template-->\n      <ng-container\n        *ngIf=\"contacto.enLinea; then conectado; else desconectado\"\n      ></ng-container>\n      <div class=\"linea-separadora-hotizontal\"></div>\n      <!--boton para contacto en linea-->\n      <ng-template #conectado>\n        <span (click)=\"onVideollamada(contacto)\" class=\"span-videollamada\"\n          >videollamada</span>\n      </ng-template>\n      <!-- boton para contacto desconectado-->\n      <ng-template #desconectado>\n        <span class=\"span-desconectado\">videollamada</span>\n      </ng-template>\n    </li>\n  </ul>\n</div>\n"
 
 /***/ }),
 
@@ -458,6 +469,7 @@ var ContactosComponent = /** @class */ (function () {
     function ContactosComponent() {
         this.seleccionarContacto = new _angular_core__WEBPACK_IMPORTED_MODULE_1__["EventEmitter"]();
         this.videollamadaContacto = new _angular_core__WEBPACK_IMPORTED_MODULE_1__["EventEmitter"]();
+        this.chatContacto = new _angular_core__WEBPACK_IMPORTED_MODULE_1__["EventEmitter"]();
     }
     ContactosComponent.prototype.ngOnInit = function () {
     };
@@ -466,6 +478,9 @@ var ContactosComponent = /** @class */ (function () {
     };
     ContactosComponent.prototype.onVideollamada = function (contacto) {
         this.videollamadaContacto.emit(contacto);
+    };
+    ContactosComponent.prototype.onChatContacto = function (contacto) {
+        this.chatContacto.emit(contacto);
     };
     tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Input"])(),
@@ -479,6 +494,10 @@ var ContactosComponent = /** @class */ (function () {
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Output"])(),
         tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:type", Object)
     ], ContactosComponent.prototype, "videollamadaContacto", void 0);
+    tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Output"])(),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:type", Object)
+    ], ContactosComponent.prototype, "chatContacto", void 0);
     ContactosComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
             selector: 'app-contactos',
@@ -666,6 +685,82 @@ var LayoutVideollamadaComponent = /** @class */ (function () {
         tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [])
     ], LayoutVideollamadaComponent);
     return LayoutVideollamadaComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "./src/app/component/notificacion/notificacion.component.css":
+/*!*******************************************************************!*\
+  !*** ./src/app/component/notificacion/notificacion.component.css ***!
+  \*******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = ".container-notificacion {\n    color: white;\n    width: 80%;\n    margin: 0 auto;\n  }\n  \n  .container-notificacion div {\n    position: fixed;\n    top: 10px;\n    right: 10px;\n    width: 20%;\n  }\n  \n  .info {\n    color: #004085;\n    background-color: #cce5ff;\n    border-color: #b8daff;\n    position: relative;\n    padding: 0.75rem 1.25rem;\n    margin-bottom: 1rem;\n    border: 1px solid transparent;\n    border-top-color: transparent;\n    border-right-color: transparent;\n    border-bottom-color: transparent;\n    border-left-color: transparent;\n    border-radius: 0.25rem;\n  }\n  \n  .success {\n    color: #155724;\n    background-color: #d4edda;\n    border-color: #c3e6cb;\n    position: relative;\n    padding: 0.75rem 1.25rem;\n    margin-bottom: 1rem;\n    border: 1px solid transparent;\n    border-top-color: transparent;\n    border-right-color: transparent;\n    border-bottom-color: transparent;\n    border-left-color: transparent;\n    border-radius: 0.25rem;\n  }\n  \n  .warning {\n    color: #856404;\n    background-color: #fff3cd;\n    border-color: #ffeeba;\n    position: relative;\n    padding: 0.75rem 1.25rem;\n    margin-bottom: 1rem;\n    border: 1px solid transparent;\n    border-top-color: transparent;\n    border-right-color: transparent;\n    border-bottom-color: transparent;\n    border-left-color: transparent;\n    border-radius: 0.25rem;\n  }\n  \n  .error {\n    color: #721c24;\n    background-color: #f8d7da;\n    border-color: #f5c6cb;\n    position: relative;\n    padding: 0.75rem 1.25rem;\n    margin-bottom: 1rem;\n    border: 1px solid transparent;\n    border-top-color: transparent;\n    border-right-color: transparent;\n    border-bottom-color: transparent;\n    border-left-color: transparent;\n    border-radius: 0.25rem;\n  }\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvY29tcG9uZW50L25vdGlmaWNhY2lvbi9ub3RpZmljYWNpb24uY29tcG9uZW50LmNzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtJQUNJLGFBQWE7SUFDYixXQUFXO0lBQ1gsZUFBZTtHQUNoQjs7RUFFRDtJQUNFLGdCQUFnQjtJQUNoQixVQUFVO0lBQ1YsWUFBWTtJQUNaLFdBQVc7R0FDWjs7RUFFRDtJQUNFLGVBQWU7SUFDZiwwQkFBMEI7SUFDMUIsc0JBQXNCO0lBQ3RCLG1CQUFtQjtJQUNuQix5QkFBeUI7SUFDekIsb0JBQW9CO0lBQ3BCLDhCQUE4QjtJQUM5Qiw4QkFBOEI7SUFDOUIsZ0NBQWdDO0lBQ2hDLGlDQUFpQztJQUNqQywrQkFBK0I7SUFDL0IsdUJBQXVCO0dBQ3hCOztFQUVEO0lBQ0UsZUFBZTtJQUNmLDBCQUEwQjtJQUMxQixzQkFBc0I7SUFDdEIsbUJBQW1CO0lBQ25CLHlCQUF5QjtJQUN6QixvQkFBb0I7SUFDcEIsOEJBQThCO0lBQzlCLDhCQUE4QjtJQUM5QixnQ0FBZ0M7SUFDaEMsaUNBQWlDO0lBQ2pDLCtCQUErQjtJQUMvQix1QkFBdUI7R0FDeEI7O0VBRUQ7SUFDRSxlQUFlO0lBQ2YsMEJBQTBCO0lBQzFCLHNCQUFzQjtJQUN0QixtQkFBbUI7SUFDbkIseUJBQXlCO0lBQ3pCLG9CQUFvQjtJQUNwQiw4QkFBOEI7SUFDOUIsOEJBQThCO0lBQzlCLGdDQUFnQztJQUNoQyxpQ0FBaUM7SUFDakMsK0JBQStCO0lBQy9CLHVCQUF1QjtHQUN4Qjs7RUFFRDtJQUNFLGVBQWU7SUFDZiwwQkFBMEI7SUFDMUIsc0JBQXNCO0lBQ3RCLG1CQUFtQjtJQUNuQix5QkFBeUI7SUFDekIsb0JBQW9CO0lBQ3BCLDhCQUE4QjtJQUM5Qiw4QkFBOEI7SUFDOUIsZ0NBQWdDO0lBQ2hDLGlDQUFpQztJQUNqQywrQkFBK0I7SUFDL0IsdUJBQXVCO0dBQ3hCIiwiZmlsZSI6InNyYy9hcHAvY29tcG9uZW50L25vdGlmaWNhY2lvbi9ub3RpZmljYWNpb24uY29tcG9uZW50LmNzcyIsInNvdXJjZXNDb250ZW50IjpbIi5jb250YWluZXItbm90aWZpY2FjaW9uIHtcbiAgICBjb2xvcjogd2hpdGU7XG4gICAgd2lkdGg6IDgwJTtcbiAgICBtYXJnaW46IDAgYXV0bztcbiAgfVxuICBcbiAgLmNvbnRhaW5lci1ub3RpZmljYWNpb24gZGl2IHtcbiAgICBwb3NpdGlvbjogZml4ZWQ7XG4gICAgdG9wOiAxMHB4O1xuICAgIHJpZ2h0OiAxMHB4O1xuICAgIHdpZHRoOiAyMCU7XG4gIH1cbiAgXG4gIC5pbmZvIHtcbiAgICBjb2xvcjogIzAwNDA4NTtcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiAjY2NlNWZmO1xuICAgIGJvcmRlci1jb2xvcjogI2I4ZGFmZjtcbiAgICBwb3NpdGlvbjogcmVsYXRpdmU7XG4gICAgcGFkZGluZzogMC43NXJlbSAxLjI1cmVtO1xuICAgIG1hcmdpbi1ib3R0b206IDFyZW07XG4gICAgYm9yZGVyOiAxcHggc29saWQgdHJhbnNwYXJlbnQ7XG4gICAgYm9yZGVyLXRvcC1jb2xvcjogdHJhbnNwYXJlbnQ7XG4gICAgYm9yZGVyLXJpZ2h0LWNvbG9yOiB0cmFuc3BhcmVudDtcbiAgICBib3JkZXItYm90dG9tLWNvbG9yOiB0cmFuc3BhcmVudDtcbiAgICBib3JkZXItbGVmdC1jb2xvcjogdHJhbnNwYXJlbnQ7XG4gICAgYm9yZGVyLXJhZGl1czogMC4yNXJlbTtcbiAgfVxuICBcbiAgLnN1Y2Nlc3Mge1xuICAgIGNvbG9yOiAjMTU1NzI0O1xuICAgIGJhY2tncm91bmQtY29sb3I6ICNkNGVkZGE7XG4gICAgYm9yZGVyLWNvbG9yOiAjYzNlNmNiO1xuICAgIHBvc2l0aW9uOiByZWxhdGl2ZTtcbiAgICBwYWRkaW5nOiAwLjc1cmVtIDEuMjVyZW07XG4gICAgbWFyZ2luLWJvdHRvbTogMXJlbTtcbiAgICBib3JkZXI6IDFweCBzb2xpZCB0cmFuc3BhcmVudDtcbiAgICBib3JkZXItdG9wLWNvbG9yOiB0cmFuc3BhcmVudDtcbiAgICBib3JkZXItcmlnaHQtY29sb3I6IHRyYW5zcGFyZW50O1xuICAgIGJvcmRlci1ib3R0b20tY29sb3I6IHRyYW5zcGFyZW50O1xuICAgIGJvcmRlci1sZWZ0LWNvbG9yOiB0cmFuc3BhcmVudDtcbiAgICBib3JkZXItcmFkaXVzOiAwLjI1cmVtO1xuICB9XG4gIFxuICAud2FybmluZyB7XG4gICAgY29sb3I6ICM4NTY0MDQ7XG4gICAgYmFja2dyb3VuZC1jb2xvcjogI2ZmZjNjZDtcbiAgICBib3JkZXItY29sb3I6ICNmZmVlYmE7XG4gICAgcG9zaXRpb246IHJlbGF0aXZlO1xuICAgIHBhZGRpbmc6IDAuNzVyZW0gMS4yNXJlbTtcbiAgICBtYXJnaW4tYm90dG9tOiAxcmVtO1xuICAgIGJvcmRlcjogMXB4IHNvbGlkIHRyYW5zcGFyZW50O1xuICAgIGJvcmRlci10b3AtY29sb3I6IHRyYW5zcGFyZW50O1xuICAgIGJvcmRlci1yaWdodC1jb2xvcjogdHJhbnNwYXJlbnQ7XG4gICAgYm9yZGVyLWJvdHRvbS1jb2xvcjogdHJhbnNwYXJlbnQ7XG4gICAgYm9yZGVyLWxlZnQtY29sb3I6IHRyYW5zcGFyZW50O1xuICAgIGJvcmRlci1yYWRpdXM6IDAuMjVyZW07XG4gIH1cbiAgXG4gIC5lcnJvciB7XG4gICAgY29sb3I6ICM3MjFjMjQ7XG4gICAgYmFja2dyb3VuZC1jb2xvcjogI2Y4ZDdkYTtcbiAgICBib3JkZXItY29sb3I6ICNmNWM2Y2I7XG4gICAgcG9zaXRpb246IHJlbGF0aXZlO1xuICAgIHBhZGRpbmc6IDAuNzVyZW0gMS4yNXJlbTtcbiAgICBtYXJnaW4tYm90dG9tOiAxcmVtO1xuICAgIGJvcmRlcjogMXB4IHNvbGlkIHRyYW5zcGFyZW50O1xuICAgIGJvcmRlci10b3AtY29sb3I6IHRyYW5zcGFyZW50O1xuICAgIGJvcmRlci1yaWdodC1jb2xvcjogdHJhbnNwYXJlbnQ7XG4gICAgYm9yZGVyLWJvdHRvbS1jb2xvcjogdHJhbnNwYXJlbnQ7XG4gICAgYm9yZGVyLWxlZnQtY29sb3I6IHRyYW5zcGFyZW50O1xuICAgIGJvcmRlci1yYWRpdXM6IDAuMjVyZW07XG4gIH0iXX0= */"
+
+/***/ }),
+
+/***/ "./src/app/component/notificacion/notificacion.component.html":
+/*!********************************************************************!*\
+  !*** ./src/app/component/notificacion/notificacion.component.html ***!
+  \********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<div>\n    <div class=\"container-notificacion\" *ngFor=\"let notificacion of notificaciones\">\n      <div class=\"{{notificacion.nivel}}\" >\n        <h4>{{notificacion.titulo}}</h4>\n        <p>{{notificacion.mensaje}}</p>\n      </div>\n    </div>\n</div>"
+
+/***/ }),
+
+/***/ "./src/app/component/notificacion/notificacion.component.ts":
+/*!******************************************************************!*\
+  !*** ./src/app/component/notificacion/notificacion.component.ts ***!
+  \******************************************************************/
+/*! exports provided: NotificacionComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "NotificacionComponent", function() { return NotificacionComponent; });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+/* harmony import */ var src_app_service_notificacion_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/service/notificacion.service */ "./src/app/service/notificacion.service.ts");
+
+
+
+var NotificacionComponent = /** @class */ (function () {
+    function NotificacionComponent(notificacionService) {
+        this.notificacionService = notificacionService;
+        this.timeoutMsg = 3000;
+        this.notificaciones = [];
+    }
+    NotificacionComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        this.suscripcionNotificaciones = this.notificacionService.subjectNotificacion$
+            .subscribe(function (notificacion) {
+            console.log('Enviando mensaje ' + notificacion.nivel + ' - ' + notificacion.mensaje);
+            _this.notificaciones.push(notificacion);
+            setTimeout(function () {
+                _this.eliminarNotificacion(notificacion);
+            }, _this.timeoutMsg);
+        });
+    };
+    NotificacionComponent.prototype.ngOnDestroy = function () {
+        this.suscripcionNotificaciones.unsubscribe();
+    };
+    NotificacionComponent.prototype.eliminarNotificacion = function (notificacion) {
+        this.notificaciones = this.notificaciones.filter(function (x) { return x !== notificacion; });
+    };
+    NotificacionComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
+            selector: 'app-notificacion',
+            template: __webpack_require__(/*! ./notificacion.component.html */ "./src/app/component/notificacion/notificacion.component.html"),
+            styles: [__webpack_require__(/*! ./notificacion.component.css */ "./src/app/component/notificacion/notificacion.component.css")]
+        }),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [src_app_service_notificacion_service__WEBPACK_IMPORTED_MODULE_2__["NotificacionService"]])
+    ], NotificacionComponent);
+    return NotificacionComponent;
 }());
 
 
@@ -973,10 +1068,10 @@ var VideoComponent = /** @class */ (function () {
     };
     VideoComponent.prototype.disconnectVideollamadaSession = function () {
         this.sesionEstablecida = false;
-        console.log('Desconectando sesion openvidu videollamada');
-        this.videollamadaService.disconnectVideollamadaSession();
+        // this.videollamadaService.disconnectVideollamadaSession();
+        // --- SE ENVIARA MENSAJE PARA TERMINAR VIDEOLLAMADA ---
         var videollamadaId = this.sesionService.obtenerSesionVideoLLamada().videollamadaId;
-        console.log('Desconectando sesion videollamada [id=' + videollamadaId + '');
+        console.log('Peticion desconeccion sesion openvidu videollamada [id=' + videollamadaId + ']');
         var contenido = {
             tipoMensaje: src_app_domain_websocket_domain__WEBPACK_IMPORTED_MODULE_4__["TipoMensaje"].TERMINAR_VIDEOLLAMADA,
             contenido: {
@@ -998,6 +1093,29 @@ var VideoComponent = /** @class */ (function () {
     return VideoComponent;
 }());
 
+
+
+/***/ }),
+
+/***/ "./src/app/config/config.ts":
+/*!**********************************!*\
+  !*** ./src/app/config/config.ts ***!
+  \**********************************/
+/*! exports provided: WEBSERVICE_VIDEOLLAMADAS, WEBSOCKET_VIDEOLLAMADAS */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WEBSERVICE_VIDEOLLAMADAS", function() { return WEBSERVICE_VIDEOLLAMADAS; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WEBSOCKET_VIDEOLLAMADAS", function() { return WEBSOCKET_VIDEOLLAMADAS; });
+/**
+ * direccion ip webservice de videollamadas
+ */
+var WEBSERVICE_VIDEOLLAMADAS = 'https:192.168.0.26:5000';
+/**
+ * direccion ip websocket comunicacion en tiempo real.
+ */
+var WEBSOCKET_VIDEOLLAMADAS = 'wss://192.168.0.26:5000/chat';
 
 
 /***/ }),
@@ -1071,6 +1189,7 @@ var TipoMensaje;
     TipoMensaje["TOKEN_VIDEOLLAMADA"] = "TOKEN_VIDEOLLAMADA";
     TipoMensaje["ERROR_SERVIDOR"] = "ERROR_SERVIDOR";
     TipoMensaje["ERROR_VIDEOLLAMADA"] = "ERROR_VIDEOLLAMADA";
+    TipoMensaje["ACTUALIZAR_CONTACTOS"] = "ACTUALIZAR_CONTACTOS";
 })(TipoMensaje || (TipoMensaje = {}));
 // -------- MENSAJES ASOCIADOS A CONTENIDO DE APP -------
 /**
@@ -1187,13 +1306,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm5/http.js");
+/* harmony import */ var _config_config__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../config/config */ "./src/app/config/config.ts");
+
 
 
 
 var ContactoAgenteService = /** @class */ (function () {
     function ContactoAgenteService(http) {
         this.http = http;
-        this.endpoint = 'https://localhost:5000';
+        this.endpoint = _config_config__WEBPACK_IMPORTED_MODULE_3__["WEBSERVICE_VIDEOLLAMADAS"];
     }
     ContactoAgenteService.prototype.buscarContactoAgenteApp = function (id) {
         return this.http.get(this.endpoint + '/login/cckall/' + id);
@@ -1210,6 +1331,93 @@ var ContactoAgenteService = /** @class */ (function () {
     return ContactoAgenteService;
 }());
 
+
+
+/***/ }),
+
+/***/ "./src/app/service/notificacion.service.ts":
+/*!*************************************************!*\
+  !*** ./src/app/service/notificacion.service.ts ***!
+  \*************************************************/
+/*! exports provided: NotificacionService, Nivel, Tipo */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "NotificacionService", function() { return NotificacionService; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Nivel", function() { return Nivel; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tipo", function() { return Tipo; });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm5/index.js");
+
+
+
+var NotificacionService = /** @class */ (function () {
+    function NotificacionService() {
+        /**
+         * Encargado de escuchar las peticiones de mensajes.
+         **/
+        this.subjectNotificacion$ = new rxjs__WEBPACK_IMPORTED_MODULE_2__["Subject"]();
+    }
+    NotificacionService.prototype.getNotificaciones = function () {
+        return this.subjectNotificacion$.asObservable();
+    };
+    NotificacionService.prototype.show = function (tipo, nivel, titulo, msg) {
+        var notificacion = {
+            titulo: titulo,
+            mensaje: msg,
+            nivel: nivel,
+            visible: true,
+            tipo: tipo
+        };
+        this.subjectNotificacion$.next(notificacion);
+    };
+    NotificacionService.prototype.successAlert = function (mensaje) {
+        this.show(Tipo.ALERT, 'success', 'Exito', mensaje);
+    };
+    NotificacionService.prototype.infoAlert = function (mensaje) {
+        this.show(Tipo.ALERT, 'info', 'Información', mensaje);
+    };
+    NotificacionService.prototype.warningAlert = function (mensaje) {
+        this.show(Tipo.ALERT, 'warning', 'Advertencia', mensaje);
+    };
+    NotificacionService.prototype.errorAlert = function (mensaje) {
+        this.show(Tipo.ALERT, 'error', 'Error', mensaje);
+    };
+    NotificacionService.prototype.successNotify = function (mensaje) {
+        this.show(Tipo.NOTIFY, 'success', 'Exito', mensaje);
+    };
+    NotificacionService.prototype.infoNotify = function (mensaje) {
+        this.show(Tipo.NOTIFY, 'info', 'Información', mensaje);
+    };
+    NotificacionService.prototype.warningNotify = function (mensaje) {
+        this.show(Tipo.NOTIFY, 'warning', 'Advertencia', mensaje);
+    };
+    NotificacionService.prototype.errorNotify = function (mensaje) {
+        this.show(Tipo.NOTIFY, 'error', 'Error', mensaje);
+    };
+    NotificacionService = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Injectable"])({
+            providedIn: 'root'
+        }),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [])
+    ], NotificacionService);
+    return NotificacionService;
+}());
+
+var Nivel;
+(function (Nivel) {
+    Nivel["SUCCESS"] = "success";
+    Nivel["INFO"] = "info";
+    Nivel["WARN"] = "warn";
+    Nivel["ERROR"] = "error";
+})(Nivel || (Nivel = {}));
+var Tipo;
+(function (Tipo) {
+    Tipo["ALERT"] = "ALERT";
+    Tipo["NOTIFY"] = "NOTIFY";
+})(Tipo || (Tipo = {}));
 
 
 /***/ }),
@@ -1449,6 +1657,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm5/index.js");
 /* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs/operators */ "./node_modules/rxjs/_esm5/operators/index.js");
 /* harmony import */ var _domain_websocket_domain__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../domain/websocket.domain */ "./src/app/domain/websocket.domain.ts");
+/* harmony import */ var _config_config__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../config/config */ "./src/app/config/config.ts");
+
 
 
 
@@ -1468,7 +1678,7 @@ var WebsocketService = /** @class */ (function () {
     };
     WebsocketService.prototype.create = function () {
         var _this = this;
-        var url = 'wss://localhost:5000/chat';
+        var url = _config_config__WEBPACK_IMPORTED_MODULE_5__["WEBSOCKET_VIDEOLLAMADAS"];
         var ws = new WebSocket(url);
         ws.onopen = function (data) {
             console.log('Conexion websocket establecida...');
