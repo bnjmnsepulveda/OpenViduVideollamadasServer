@@ -23,6 +23,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -145,10 +146,18 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
                 videollamadaService.removeSession(videollamadaId);
             } else if (tipoMensaje.equals(TipoMensaje.TERMINAR_VIDEOLLAMADA.name())) {
                 // --- PETICION TERMINAR VIDEOLLAMADA ---
-                MensajeWebsocket<MensajeSimple> request =  JsonHelper.convertirObjeto(getTypeMessageMensajeSimple(), payload);
+                MensajeWebsocket<MensajeSimple> request = JsonHelper.convertirObjeto(getTypeMessageMensajeSimple(), payload);
                 String videollamadaId = request.getContenido().getMensaje();
-                logger.info("terminando videollamada [id=" + videollamadaId + "]");
-                videollamadaService.removeSession(videollamadaId);
+                logger.info("Terminando videollamada [id=" + videollamadaId + "]");
+                SesionVideollamada sesion = videollamadaService.removeSession(videollamadaId);
+                ContactoAgente contactoCortante = websocketService.findContactoAgenteBySessionId(session.getId());
+                MensajeWebsocket<MensajeSimple> response;
+                MensajeSimple contenido = new MensajeSimple(contactoCortante.getUsuarioOperkall() + " ha cortado la llamada");
+                // --- recorrer participantes para enviar mensjae cancelar videollamada ---
+                for (Map.Entry<String, ContactoAgente> entry : sesion.getParticipantes().entrySet()) {
+                    response = new MensajeWebsocket(TipoMensaje.TERMINAR_VIDEOLLAMADA, contenido);
+                    websocketService.sendMessage(entry.getValue(), response);
+                }
             }
 
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
@@ -187,12 +196,11 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
         }.getType();
         return type;
     }
-    
+
     public Type getTypeMessageMensajeSimple() {
         Type type = new TypeToken<MensajeWebsocket<MensajeSimple>>() {
         }.getType();
         return type;
     }
-    
 
 }

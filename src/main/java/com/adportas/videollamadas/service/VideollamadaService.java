@@ -133,11 +133,12 @@ public class VideollamadaService {
         return disponible;
     }
 
-    public void removeSession(String videollamadaId) throws OpenViduJavaClientException, OpenViduHttpException {
+    public SesionVideollamada removeSession(String videollamadaId) throws OpenViduJavaClientException, OpenViduHttpException {
         SesionVideollamada sesion = sessions.remove(videollamadaId);
         if (sesion != null && sesion.getSession() != null) {
             sesion.getSession().close();
         }
+        return sesion;
     }
 
     public void removeSessionByWebsocketSessionId(String sessionId) throws OpenViduJavaClientException, OpenViduHttpException {

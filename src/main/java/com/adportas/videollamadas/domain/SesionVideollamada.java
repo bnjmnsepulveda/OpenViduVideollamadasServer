@@ -14,12 +14,17 @@ public class SesionVideollamada {
     private String videollamadaId;
     private Session session;
     /**
-     * Contiene una lista de participantes y los token de sesion de
+     * Contiene una lista de participantes y los token de sesion openvidu de
      * videollamadas asignados.
      */
     private Map<String, ContactoAgente> participantes;
     private EstadoVideoLLamada estado;
     
+    /**
+     * Agrega un participante a una videollamada con su respectivo token de sesion openvidu.
+     * @param token
+     * @param contacto 
+     */
     public void agregarParticipante(String token, ContactoAgente contacto) {
         if(participantes == null) {
             participantes = new HashMap();
@@ -27,6 +32,10 @@ public class SesionVideollamada {
         participantes.put(token, contacto);
     }
 
+    /**
+     * devuelve los participantes de una videollmada con sus respectivos token de sesion openvidu.
+     * @return 
+     */
     public Map<String, ContactoAgente> getParticipantes() {
         return participantes;
     }
