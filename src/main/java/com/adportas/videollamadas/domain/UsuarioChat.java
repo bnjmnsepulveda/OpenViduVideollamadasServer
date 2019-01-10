@@ -7,17 +7,18 @@ package com.adportas.videollamadas.domain;
  */
 public class UsuarioChat {
 
-    private int id;
+    private long id;
     private String username;
-    private boolean enlinea;
+    private boolean habilitado;
+    private boolean enLinea;
     private String sessionId;
     private String rol;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -29,12 +30,20 @@ public class UsuarioChat {
         this.username = username;
     }
 
-    public boolean isEnlinea() {
-        return enlinea;
+    public boolean isHabilitado() {
+        return habilitado;
     }
 
-    public void setEnlinea(boolean enlinea) {
-        this.enlinea = enlinea;
+    public void setHabilitado(boolean habilitado) {
+        this.habilitado = habilitado;
+    }
+
+    public boolean isEnLinea() {
+        return enLinea;
+    }
+
+    public void setEnLinea(boolean enLinea) {
+        this.enLinea = enLinea;
     }
 
     public String getSessionId() {

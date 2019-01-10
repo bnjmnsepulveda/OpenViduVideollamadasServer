@@ -1,6 +1,7 @@
 
 package com.adportas.videollamadas.service;
 
+import com.adportas.videollamadas.domain.UsuarioChat;
 import org.springframework.stereotype.Service;
 
 /**
@@ -10,4 +11,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ChatService {
 
+    public void enviarMensaje(UsuarioChat emisor) {
+        
+    }
+    
 }
