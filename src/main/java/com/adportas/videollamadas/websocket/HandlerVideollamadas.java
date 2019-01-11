@@ -175,6 +175,8 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
                     response = new MensajeWebsocket(TipoMensaje.TERMINAR_VIDEOLLAMADA, contenido);
                     websocketService.sendMessage(entry.getValue(), response);
                 }
+            } else if(tipoMensaje.equals(TipoMensaje.MENSAJE_CHAT.name())) {
+                // --- NOTIFICAR USUARIOS DE NUEVO MENSAJE ---
             }
 
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
