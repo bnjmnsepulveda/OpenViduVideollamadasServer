@@ -67,7 +67,11 @@ public enum TipoMensaje {
     /**
      * avisa que se debe actualizar la lista de contactos.
      */
-    ACTUALIZAR_CONTACTOS;
+    ACTUALIZAR_CONTACTOS,
+    
+    // ----- MENSAJES CHAT ---
+    
+    
     
     
 }

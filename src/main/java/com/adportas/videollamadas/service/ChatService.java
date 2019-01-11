@@ -51,19 +51,16 @@ public class ChatService {
         Conversacion conversacion = null;
         for (Map.Entry<Long, Conversacion> entry : conversaciones.entrySet()) {
             List<UsuarioChat> participantes = entry.getValue().getParticipantes();
-            boolean coincidencia = false;
+            int coincidencia = 0;
             for (UsuarioChat usuario : participantes) {
                 for (long idUsuario : usuarioChatIdArray) {
                     if (usuario.getId() == idUsuario) {
-                        coincidencia = true;
+                        coincidencia++;
                         break;
                     }
                 }
-                if (!coincidencia) {
-                    break;
-                }
             }
-            if (coincidencia) {
+            if (coincidencia == entry.getValue().getParticipantes().size()) {
                 conversacion = entry.getValue();
                 break;
             }

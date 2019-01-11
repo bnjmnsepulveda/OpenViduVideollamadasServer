@@ -14,6 +14,16 @@ public class UsuarioChat {
     private String sessionId;
     private String rol;
 
+    public UsuarioChat() {
+    }
+
+    public UsuarioChat(String username, boolean habilitado, boolean enLinea, String rol) {
+        this.username = username;
+        this.habilitado = habilitado;
+        this.enLinea = enLinea;
+        this.rol = rol;
+    }
+    
     public long getId() {
         return id;
     }

@@ -1,6 +1,7 @@
 package com.adportas.videollamadas.webapp.restcontroller;
 
 import com.adportas.videollamadas.datasource.ContactoAgenteDAO;
+import com.adportas.videollamadas.datasource.UsuarioChatDAO;
 import com.adportas.videollamadas.domain.ContactoAgente;
 import com.adportas.videollamadas.domain.UsuarioChat;
 import com.adportas.videollamadas.service.WebsocketService;
@@ -27,6 +28,8 @@ public class ContactoAgenteREST {
     @Autowired
     private ContactoAgenteDAO contactoAgenteDAO;
     @Autowired
+    private UsuarioChatDAO usuarioChatDAO;
+    @Autowired
     private WebsocketService websocketService;
     private static final Logger logger = LogManager.getLogger(ContactoAgenteREST.class);
 
@@ -41,6 +44,7 @@ public class ContactoAgenteREST {
         usuarioChat.setRol("agente");
         usuarioChat.setUsername(contacto.getUsuarioOperkall());
         contacto.setUsuarioChat(usuarioChat);
+        usuarioChatDAO.create(usuarioChat);
         return contacto;
     }
 
@@ -57,6 +61,7 @@ public class ContactoAgenteREST {
             usuarioChat.setRol("agente");
             usuarioChat.setUsername(contacto.getUsuarioOperkall());
             contacto.setUsuarioChat(usuarioChat);
+            usuarioChatDAO.create(usuarioChat);
             // --- setear estado enlinea ---
             if (contactosEnLinea.contains(contacto)) {
                 logger.info(contacto.getUsuarioOperkall() + " en linea");

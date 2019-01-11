@@ -19,6 +19,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -75,12 +76,7 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
             if (tipoMensaje.equals(TipoMensaje.REGISTRO_USUARIO.name())) {
                 // --- PETICION REGISTRO USUARIO ---
                 MensajeWebsocket<ContactoAgente> msg = JsonHelper.convertirObjeto(TypeHelper.getTypeRegistroUsuario(), payload);
-                websocketService.registerUser(session.getId(), msg.getContenido());
-                logger.info("Usuario " + msg.getContenido().getUsuarioOperkall() + " registrado en sesion websocket [id=" + session.getId() + "]");
-                logger.info("Se enviara mensaje de nuevo usuario en linea");
-                MensajeWebsocket<MensajeSimple> broadcasting = new MensajeWebsocket<>(TipoMensaje.ACTUALIZAR_CONTACTOS);
-                broadcasting.setContenido(new MensajeSimple(msg.getContenido().getUsuarioOperkall() + " en linea"));
-                websocketService.sendBroadcastMessage(broadcasting);
+                registroUsuario(session, msg);
             } else if (tipoMensaje.equals(TipoMensaje.INICIAR_VIDEO_LLAMADA.name())) {
 
                 // --- PETICION INICIAR VIDEOLLAMADA ---
@@ -194,5 +190,13 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
         }
     }
 
-  
+    private void registroUsuario(WebSocketSession session, MensajeWebsocket<ContactoAgente> msg) throws IOException {
+        websocketService.registerUser(session.getId(), msg.getContenido());
+        logger.info("Usuario " + msg.getContenido().getUsuarioOperkall() + " registrado en sesion websocket [id=" + session.getId() + "]");
+        logger.info("Se enviara mensaje de nuevo usuario en linea");
+        MensajeWebsocket<MensajeSimple> broadcasting = new MensajeWebsocket<>(TipoMensaje.ACTUALIZAR_CONTACTOS);
+        broadcasting.setContenido(new MensajeSimple(msg.getContenido().getUsuarioOperkall() + " en linea"));
+        websocketService.sendBroadcastMessage(broadcasting);
+    }
+
 }
