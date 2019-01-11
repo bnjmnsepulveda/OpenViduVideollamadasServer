@@ -7,8 +7,8 @@ import com.adportas.videollamadas.domain.UsuarioChat;
 import com.adportas.videollamadas.websocket.MensajeWebsocket;
 import com.adportas.videollamadas.websocket.TipoMensaje;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,13 +33,18 @@ public class ChatService {
     public void enviarMensaje(long conversacionId, MensajeChat mensaje) throws IOException {
         Conversacion conversacion = conversaciones.get(conversacionId);
         if (conversacion != null) {
-            MensajeWebsocket<MensajeChat> msgSocket = new MensajeWebsocket<>(new Date(), TipoMensaje.TIMEOUT_LLAMADA, mensaje);
+            MensajeWebsocket<MensajeChat> msgSocket = new MensajeWebsocket(TipoMensaje.TIMEOUT_LLAMADA, mensaje);
             for (UsuarioChat participante : conversacion.getParticipantes()) {
                 ContactoAgente contacto = websocketService.findContactoAgenteByUsuarioChat(participante.getId());
-                if(contacto!= null) {
+                if (contacto != null) {
                     websocketService.sendMessage(contacto, msgSocket);
                 }
             }
+            if (conversacion.getMensajes() == null) {
+                conversacion.setMensajes(new ArrayList());
+            }
+            conversacion.getMensajes().add(mensaje);
+            conversaciones.put(conversacionId, conversacion);
         }
     }
 
