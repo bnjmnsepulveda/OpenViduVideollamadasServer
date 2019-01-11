@@ -1,7 +1,9 @@
 package com.adportas.videollamadas.webapp.restcontroller;
 
 import com.adportas.videollamadas.datasource.ContactoAgenteDAO;
+import com.adportas.videollamadas.datasource.UsuarioChatDAO;
 import com.adportas.videollamadas.domain.ContactoAgente;
+import com.adportas.videollamadas.domain.UsuarioChat;
 import com.adportas.videollamadas.service.WebsocketService;
 import java.util.List;
 import org.apache.log4j.LogManager;
@@ -26,22 +28,44 @@ public class ContactoAgenteREST {
     @Autowired
     private ContactoAgenteDAO contactoAgenteDAO;
     @Autowired
+    private UsuarioChatDAO usuarioChatDAO;
+    @Autowired
     private WebsocketService websocketService;
     private static final Logger logger = LogManager.getLogger(ContactoAgenteREST.class);
 
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ContactoAgente getAgentebyId(@PathVariable("id") int id) {
-        return contactoAgenteDAO.readById(id);
+        ContactoAgente contacto = contactoAgenteDAO.readById(id);
+        // --- crear usuario chat en memoria ---
+        UsuarioChat usuarioChat = new UsuarioChat();
+        usuarioChat.setId(contacto.getId());
+        usuarioChat.setEnLinea(true);
+        usuarioChat.setHabilitado(true);
+        usuarioChat.setRol("agente");
+        usuarioChat.setUsername(contacto.getUsuarioOperkall());
+        contacto.setUsuarioChat(usuarioChat);
+        usuarioChatDAO.create(usuarioChat);
+        return contacto;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<ContactoAgente> getAgentes() {
         List<ContactoAgente> contactos = contactoAgenteDAO.readAll();
         List<ContactoAgente> contactosEnLinea = websocketService.findContactosEnLinea();
-        contactos.forEach(c -> {
-            if (contactosEnLinea.contains(c)) {
-                logger.info(c.getUsuarioOperkall() + " en linea");
-                c.setEnLinea(true);
+        contactos.forEach(contacto -> {
+            // --- crear usuario chat en memoria ---
+            UsuarioChat usuarioChat = new UsuarioChat();
+            usuarioChat.setId(contacto.getId());
+            usuarioChat.setEnLinea(true);
+            usuarioChat.setHabilitado(true);
+            usuarioChat.setRol("agente");
+            usuarioChat.setUsername(contacto.getUsuarioOperkall());
+            contacto.setUsuarioChat(usuarioChat);
+            usuarioChatDAO.create(usuarioChat);
+            // --- setear estado enlinea ---
+            if (contactosEnLinea.contains(contacto)) {
+                logger.info(contacto.getUsuarioOperkall() + " en linea");
+                contacto.setEnLinea(true);
             }
         });
         return contactos;

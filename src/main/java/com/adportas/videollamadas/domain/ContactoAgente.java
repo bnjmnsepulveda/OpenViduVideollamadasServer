@@ -13,8 +13,16 @@ public class ContactoAgente implements Serializable {
     private String apellido;
     private String usuarioOperkall;
     private boolean enLinea;
-    
+    private UsuarioChat usuarioChat;
     private Long id;
+
+    public UsuarioChat getUsuarioChat() {
+        return usuarioChat;
+    }
+
+    public void setUsuarioChat(UsuarioChat usuarioChat) {
+        this.usuarioChat = usuarioChat;
+    }
 
     public Long getId() {
         return id;

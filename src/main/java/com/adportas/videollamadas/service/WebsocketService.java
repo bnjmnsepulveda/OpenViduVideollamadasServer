@@ -87,6 +87,16 @@ public class WebsocketService implements IWebsocketService<MensajeWebsocket> {
         }
         return null;
     }
+    
+    public ContactoAgente findContactoAgenteByUsuarioChat(long usuarioChatId) {
+        for (Map.Entry<String, SesionWebsocket> entry : sessions.entrySet()) {
+            ContactoAgente contacto = entry.getValue().getContactoAgente();
+            if(contacto.getUsuarioChat() != null && contacto.getUsuarioChat().getId() == usuarioChatId) {
+                return contacto;
+            }
+        }
+        return null;
+    }
 
     public List<ContactoAgente> findContactosEnLinea() {
         List<ContactoAgente> contactos = new ArrayList();
