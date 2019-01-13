@@ -41,12 +41,12 @@ public class ChatREST {
     @GetMapping(path = "/test")
     public void testJson() {
         ContenidoBuilder contenido = new ContenidoBuilder();
-        contenido.agrearPropiedad("usuario", new UsuarioChat("chat", true, true, "usuario"));
-        contenido.agrearPropiedad("content-type", "json/application");
+        contenido.agregar("usuario", new UsuarioChat("chat", true, true, "usuario"));
+        contenido.agregar("content-type", "json/application");
         contenido
-                .agrearPropiedad("username", "benjamin")
-                .agrearPropiedad("mascota", "chiripi")
-                .agrearPropiedad("text", "hola mundo");
+                .agregar("username", "benjamin")
+                .agregar("mascota", "chiripi")
+                .agregar("text", "hola mundo");
         MensajeWebsocket msg = new MensajeWebsocket(TipoMensaje.MENSAJE_CHAT);
         msg.setContenido(contenido.buildContenido());
         System.out.println(JsonHelper.convertirJson(msg));

@@ -10,11 +10,11 @@ import java.util.Date;
  */
 public class MensajeChat {
 
-    long id;
-    String contenido;
-    UsuarioChat emisor;
-    Date fecha;
-    TipoMensajeChat tipoMensaje;
+    private long id;
+    private String contenido;
+    private UsuarioChat emisor;
+    private Date fecha;
+    private TipoMensajeChat tipoMensaje;
 
     public MensajeChat() {
     }

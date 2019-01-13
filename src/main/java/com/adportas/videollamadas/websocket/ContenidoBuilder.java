@@ -21,7 +21,7 @@ public class ContenidoBuilder {
      * @param property
      * @return 
      */
-    public ContenidoBuilder agrearPropiedad(String key, Object property){
+    public ContenidoBuilder agregar(String key, Object property){
         contenido.put(key, property);
         return this;
     }
