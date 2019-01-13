@@ -75,12 +75,12 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
             String tipoMensaje = jsonObject.get("tipoMensaje").getAsString();
             if (tipoMensaje.equals(TipoMensaje.REGISTRO_USUARIO.name())) {
                 // --- PETICION REGISTRO USUARIO ---
-                MensajeWebsocket<ContactoAgente> msg = JsonHelper.convertirObjeto(TypeHelper.getTypeRegistroUsuario(), payload);
+                MensajeWebsocket<ContactoAgente> msg = JsonHelper.convertirObjeto(TypeHelper.getRegistroUsuario(), payload);
                 registroUsuario(session, msg);
             } else if (tipoMensaje.equals(TipoMensaje.INICIAR_VIDEO_LLAMADA.name())) {
 
                 // --- PETICION INICIAR VIDEOLLAMADA ---
-                MensajeWebsocket<MensajeVideoLLamada> msg = JsonHelper.convertirObjeto(TypeHelper.getTypeVideoLLamada(), payload);
+                MensajeWebsocket<MensajeVideoLLamada> msg = JsonHelper.convertirObjeto(TypeHelper.getMensajeVideoLLamada(), payload);
                 logger.info("Iniciar videollamada [emisor="
                         + msg.getContenido().getEmisor().getUsuarioOperkall()
                         + ", receptor=" + msg.getContenido().getReceptor().getUsuarioOperkall() + "]");
@@ -127,7 +127,7 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
                 timeoutVideollamada.start();
             } else if (tipoMensaje.equals(TipoMensaje.CONTESTAR_LLAMADA.name())) {
                 // --- PETICION CONTESTAR LLAMADA ---
-                MensajeWebsocket<MensajeContestarLLamada> request = JsonHelper.convertirObjeto(TypeHelper.getTypeContestarVideoLLamada(), payload);
+                MensajeWebsocket<MensajeContestarLLamada> request = JsonHelper.convertirObjeto(TypeHelper.getContestarVideoLLamada(), payload);
                 String videollamadaId = request.getContenido().getVideollamadaId();
                 logger.info("Se acepto la videollamada [id=" + videollamadaId + "]");
                 videollamadaService.crearSesionVideollamada(videollamadaId);
@@ -145,7 +145,7 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
                 videollamadaService.actualizarEstadoVideollamada(videollamadaId, EstadoVideoLLamada.ESTABLECIDA);
             } else if (tipoMensaje.equals(TipoMensaje.RECHAZAR_VIDEOLLAMADA.name())) {
                 // --- PETICION RECHAZAR VIDEOLLAMADA ---
-                MensajeWebsocket<MensajeCancelarLLamada> request = JsonHelper.convertirObjeto(TypeHelper.getTypeCancelarVideoLLamada(), payload);
+                MensajeWebsocket<MensajeCancelarLLamada> request = JsonHelper.convertirObjeto(TypeHelper.getCancelarVideoLLamada(), payload);
                 String videollamadaId = request.getContenido().getVideollamadaId();
                 if (request.getContenido().getNotificarContactos() != null) {
                     for (ContactoAgente contacto : request.getContenido().getNotificarContactos()) {
@@ -155,7 +155,7 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
                 }
             } else if (tipoMensaje.equals(TipoMensaje.SOLICITUD_CANCELAR_LLAMADA.name())) {
                 // --- PETICION CANCELAR LLAMADA ---                
-                MensajeWebsocket<MensajeCancelarLLamada> request = JsonHelper.convertirObjeto(TypeHelper.getTypeCancelarVideoLLamada(), payload);
+                MensajeWebsocket<MensajeCancelarLLamada> request = JsonHelper.convertirObjeto(TypeHelper.getCancelarVideoLLamada(), payload);
                 String videollamadaId = request.getContenido().getVideollamadaId();
                 for (ContactoAgente contacto : request.getContenido().getNotificarContactos()) {
                     websocketService.sendMessage(contacto, new MensajeWebsocket(new Date(), TipoMensaje.CANCELAR_LLAMADA, ""));
@@ -163,7 +163,7 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
                 videollamadaService.removeSession(videollamadaId);
             } else if (tipoMensaje.equals(TipoMensaje.TERMINAR_VIDEOLLAMADA.name())) {
                 // --- PETICION TERMINAR VIDEOLLAMADA ---
-                MensajeWebsocket<MensajeSimple> request = JsonHelper.convertirObjeto(TypeHelper.getTypeMensajeSimple(), payload);
+                MensajeWebsocket<MensajeSimple> request = JsonHelper.convertirObjeto(TypeHelper.getMensajeSimple(), payload);
                 String videollamadaId = request.getContenido().getMensaje();
                 logger.info("Terminando videollamada [id=" + videollamadaId + "]");
                 SesionVideollamada sesion = videollamadaService.removeSession(videollamadaId);

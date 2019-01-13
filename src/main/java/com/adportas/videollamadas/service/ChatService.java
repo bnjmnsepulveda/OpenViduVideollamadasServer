@@ -1,5 +1,6 @@
 package com.adportas.videollamadas.service;
 
+import com.adportas.videollamadas.datasource.UsuarioChatDAO;
 import com.adportas.videollamadas.domain.ContactoAgente;
 import com.adportas.videollamadas.domain.Conversacion;
 import com.adportas.videollamadas.domain.MensajeChat;
@@ -25,17 +26,32 @@ public class ChatService {
 
     @Autowired
     private WebsocketService websocketService;
+    @Autowired
+    private UsuarioChatDAO usuarioChatDAO;
     private final Map<Long, Conversacion> conversaciones = Collections.synchronizedMap(new HashMap());
 
     public void crearConversacion(Conversacion conversacion) {
         conversaciones.put(conversacion.getId(), conversacion);
     }
 
+    public Conversacion crearConversacion(long[] usuariosId) {
+        Conversacion conversacion = new Conversacion();
+        List<UsuarioChat> participantes = new ArrayList();
+        for (long id : usuariosId) {
+            participantes.add(usuarioChatDAO.readById(id));
+        }
+        conversacion.setParticipantes(participantes);
+        conversacion.setId(System.currentTimeMillis());
+        conversacion.setTitulo("Conversacion agente a agente");
+        conversaciones.put(conversacion.getId(), conversacion);
+        return conversacion;
+    }
+
     public void enviarMensaje(long conversacionId, MensajeChat mensaje) throws IOException {
         Conversacion conversacion = conversaciones.get(conversacionId);
         if (conversacion != null) {
             MensajeNuevoMensajeChat contenido = new MensajeNuevoMensajeChat(conversacionId, mensaje);
-            MensajeWebsocket<MensajeNuevoMensajeChat> mensajeWebsocket = new MensajeWebsocket(TipoMensaje.MENSAJE_CHAT, contenido);
+            MensajeWebsocket mensajeWebsocket = new MensajeWebsocket(TipoMensaje.MENSAJE_CHAT, contenido);
             for (UsuarioChat participante : conversacion.getParticipantes()) {
                 ContactoAgente contacto = websocketService.findContactoAgenteByUsuarioChat(participante.getId());
                 if (contacto != null) {
@@ -73,6 +89,10 @@ public class ChatService {
             }
         }
         return conversacion;
+    }
+
+    public java.util.List<Conversacion> buscarTodasLasCnversaciones() {
+        return new ArrayList(conversaciones.values());
     }
 
 }

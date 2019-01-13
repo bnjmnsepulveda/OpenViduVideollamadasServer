@@ -1,5 +1,5 @@
 
-package com.adportas.videollamadas.domain;
+package com.adportas.videollamadas.enumerated;
 
 /**
  *
