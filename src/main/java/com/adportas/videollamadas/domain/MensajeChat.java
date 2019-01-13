@@ -1,6 +1,7 @@
 
 package com.adportas.videollamadas.domain;
 
+import com.adportas.videollamadas.enumerated.TipoMensajeChat;
 import java.util.Date;
 
 /**
