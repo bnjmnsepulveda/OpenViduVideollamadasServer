@@ -7,6 +7,7 @@ import com.adportas.videollamadas.helper.JsonHelper;
 import com.adportas.videollamadas.service.ChatService;
 import com.adportas.videollamadas.websocket.ContenidoBuilder;
 import com.adportas.videollamadas.websocket.MensajeWebsocket;
+import com.adportas.videollamadas.websocket.MensajeWebsocketBuilder;
 import com.adportas.videollamadas.websocket.TipoMensaje;
 import java.io.IOException;
 import java.util.Date;
@@ -49,7 +50,12 @@ public class ChatREST {
                 .agregar("text", "hola mundo");
         MensajeWebsocket msg = new MensajeWebsocket(TipoMensaje.MENSAJE_CHAT);
         msg.setContenido(contenido.buildContenido());
-        System.out.println(JsonHelper.convertirJson(msg));
+        MensajeWebsocketBuilder mensaje = new MensajeWebsocketBuilder(TipoMensaje.MENSAJE_CHAT);
+        mensaje.agregar("username", "benjamin")
+                .agregar("id", 2345);
+        MensajeWebsocket msg2 = new MensajeWebsocket(TipoMensaje.MENSAJE_CHAT,"Soy un mensaje muy simple XD");
+        System.out.println(JsonHelper.convertirJson(msg2));
+        //System.out.println(JsonHelper.convertirJson(msg));
     }
 
     @GetMapping(path = "/conversacion", params = "usuarioId", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
