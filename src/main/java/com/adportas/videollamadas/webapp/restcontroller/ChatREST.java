@@ -4,14 +4,17 @@ import com.adportas.videollamadas.datasource.UsuarioChatDAO;
 import com.adportas.videollamadas.domain.ContactoAgente;
 import com.adportas.videollamadas.domain.Conversacion;
 import com.adportas.videollamadas.domain.MensajeChat;
+import com.adportas.videollamadas.domain.SesionVideollamada;
 import com.adportas.videollamadas.domain.UsuarioChat;
 import com.adportas.videollamadas.helper.JsonHelper;
 import com.adportas.videollamadas.service.ChatService;
+import com.adportas.videollamadas.service.VideollamadaService;
 import com.adportas.videollamadas.websocket.ContenidoBuilder;
 import com.adportas.videollamadas.websocket.MensajeWebsocket;
 import com.adportas.videollamadas.websocket.MensajeWebsocketBuilder;
 import com.adportas.videollamadas.websocket.TipoMensaje;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.LogManager;
@@ -36,6 +39,8 @@ public class ChatREST {
 
     @Autowired
     private ChatService chatService;
+    @Autowired
+    private VideollamadaService videollamadaService;
     @Autowired
     private UsuarioChatDAO usuarioChatDAO;
     private static final Logger logger = LogManager.getLogger(ChatREST.class);
@@ -62,12 +67,24 @@ public class ChatREST {
     @GetMapping(path = "/conversacion", params = "usuarioId", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Conversacion getConversacionByUsuariosId(HttpServletRequest request, @RequestParam(value = "usuarioId") long[] usuariosId) {
         logger.info("peticion: " + request.getContextPath());
-        return chatService.crearConversacion(usuariosId);
+        Conversacion conversacion = chatService.buscarConversacionByUsuariosChat(usuariosId);
+        if(conversacion == null) {
+            logger.info("No existe conversacion asociada a los usuarios "+ Arrays.toString(usuariosId) + ", se creara nueva conversacion...");
+            conversacion = chatService.crearConversacion(usuariosId);
+        }
+        return conversacion;
     }
 
     @GetMapping(path = "/conversacion/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Conversacion getConversacionById(@PathVariable("id") long id) {
         return chatService.buscarConversacionById(id);
+    }
+    
+    @GetMapping(path = "/conversacion/videollamada/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Conversacion getConversacionByVideollamadaId(@PathVariable("id") String videollamadaId) {
+        SesionVideollamada sesion = videollamadaService.buscarSesionVideollamada(videollamadaId);
+        
+        return null;
     }
 
     @GetMapping(path = "/conversacion", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -88,7 +105,7 @@ public class ChatREST {
         MensajeWebsocketBuilder builder = new MensajeWebsocketBuilder(TipoMensaje.MENSAJE_ESCRIBIENDO);
         builder.agregar("idContacto", idAgente)
                 .agregar("mensaje", contacto.getUsername() + " esta escribiendo...");
-        chatService.enviarMensaje(idConversacion, builder.build());
+        // chatService.enviarMensaje(idConversacion, builder.build());
     }
 
 }
