@@ -66,6 +66,26 @@ public class ChatService {
         }
     }
 
+    public void enviarMensaje(long conversacionId, MensajeWebsocket mensaje) throws IOException {
+        Conversacion conversacion = conversaciones.get(conversacionId);
+        if (conversacion != null) {
+            for (UsuarioChat participante : conversacion.getParticipantes()) {
+                ContactoAgente contacto = websocketService.findContactoAgenteByUsuarioChat(participante.getId());
+                if (contacto != null) {
+                    websocketService.sendMessage(contacto, mensaje);
+                }
+            }
+            if (mensaje.getContenido() instanceof MensajeChat) {
+                if (conversacion.getMensajes() == null) {
+                    conversacion.setMensajes(new ArrayList());
+                }
+                conversacion.getMensajes().add((MensajeChat) mensaje.getContenido());
+                conversaciones.put(conversacionId, conversacion);
+            }
+
+        }
+    }
+
     public Conversacion buscarConversacionById(long id) {
         return conversaciones.get(id);
     }

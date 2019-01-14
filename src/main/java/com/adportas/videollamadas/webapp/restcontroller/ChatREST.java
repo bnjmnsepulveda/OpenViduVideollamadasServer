@@ -1,5 +1,7 @@
 package com.adportas.videollamadas.webapp.restcontroller;
 
+import com.adportas.videollamadas.datasource.UsuarioChatDAO;
+import com.adportas.videollamadas.domain.ContactoAgente;
 import com.adportas.videollamadas.domain.Conversacion;
 import com.adportas.videollamadas.domain.MensajeChat;
 import com.adportas.videollamadas.domain.UsuarioChat;
@@ -10,10 +12,7 @@ import com.adportas.videollamadas.websocket.MensajeWebsocket;
 import com.adportas.videollamadas.websocket.MensajeWebsocketBuilder;
 import com.adportas.videollamadas.websocket.TipoMensaje;
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -37,6 +36,8 @@ public class ChatREST {
 
     @Autowired
     private ChatService chatService;
+    @Autowired
+    private UsuarioChatDAO usuarioChatDAO;
     private static final Logger logger = LogManager.getLogger(ChatREST.class);
 
     @GetMapping(path = "/test")
@@ -78,6 +79,16 @@ public class ChatREST {
     public void enviarMensaje(HttpServletRequest request, @RequestBody MensajeChat mensajeChat, @PathVariable("id") long id) throws IOException {
         logger.info("peticion: " + request.getServletPath());
         this.chatService.enviarMensaje(id, mensajeChat);
+    }
+    
+    @PostMapping(path = "/conversacion/{idConversacion}/escribiendo/{idUsuarioChat}")
+    public void escribiendoMensaje(@PathVariable("idConversacion") long idConversacion, @PathVariable("idUsuarioChat") long idAgente) throws IOException{
+        logger.info("mensaje escribiendo de agente id=" + idAgente);
+        UsuarioChat contacto = usuarioChatDAO.readById(idAgente);
+        MensajeWebsocketBuilder builder = new MensajeWebsocketBuilder(TipoMensaje.MENSAJE_ESCRIBIENDO);
+        builder.agregar("idContacto", idAgente)
+                .agregar("mensaje", contacto.getUsername() + " esta escribiendo...");
+        chatService.enviarMensaje(idConversacion, builder.build());
     }
 
 }

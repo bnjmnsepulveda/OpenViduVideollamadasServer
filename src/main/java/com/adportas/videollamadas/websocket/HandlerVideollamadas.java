@@ -168,23 +168,22 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
                 logger.info("Terminando videollamada [id=" + videollamadaId + "]");
                 SesionVideollamada sesion = videollamadaService.removeSession(videollamadaId);
                 ContactoAgente contactoCortante = websocketService.findContactoAgenteBySessionId(session.getId());
-                MensajeWebsocket<MensajeSimple> response;
-                MensajeSimple contenido = new MensajeSimple(contactoCortante.getUsuarioOperkall() + " ha cortado la llamada");
-                // --- recorrer participantes para enviar mensjae cancelar videollamada ---
+                String contenido = contactoCortante.getUsuarioOperkall() + " ha cortado la llamada";
+                MensajeWebsocket response = new MensajeWebsocket(TipoMensaje.TERMINAR_VIDEOLLAMADA, contenido);
+                // --- recorrer participantes para enviar mensaje cancelar videollamada ---
                 for (Map.Entry<String, ContactoAgente> entry : sesion.getParticipantes().entrySet()) {
-                    response = new MensajeWebsocket(TipoMensaje.TERMINAR_VIDEOLLAMADA, contenido);
                     websocketService.sendMessage(entry.getValue(), response);
                 }
-            } else if(tipoMensaje.equals(TipoMensaje.MENSAJE_CHAT.name())) {
+            } else if (tipoMensaje.equals(TipoMensaje.MENSAJE_CHAT.name())) {
                 // --- NOTIFICAR USUARIOS DE NUEVO MENSAJE ---
             }
 
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
             logger.error(e.getMessage());
-            ContactoAgente c = websocketService.findContactoAgenteBySessionId(session.getId());
+            ContactoAgente contacto = websocketService.findContactoAgenteBySessionId(session.getId());
             MensajeError msError = new MensajeError("Error", "Problemas creando videollamada " + e.getMessage());
-            MensajeWebsocket msWs = new MensajeWebsocket(new Date(), TipoMensaje.ERROR_VIDEOLLAMADA, msError);
-            websocketService.sendMessage(c, msWs);
+            MensajeWebsocket msWs = new MensajeWebsocket(TipoMensaje.ERROR_VIDEOLLAMADA, msError);
+            websocketService.sendMessage(contacto, msWs);
         } catch (VideollamadasException e) {
             logger.error(e.getMessage());
         } catch (Exception e) {
@@ -196,8 +195,8 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
         websocketService.registerUser(session.getId(), msg.getContenido());
         logger.info("Usuario " + msg.getContenido().getUsuarioOperkall() + " registrado en sesion websocket [id=" + session.getId() + "]");
         logger.info("Se enviara mensaje de nuevo usuario en linea");
-        MensajeWebsocket<MensajeSimple> broadcasting = new MensajeWebsocket(TipoMensaje.ACTUALIZAR_CONTACTOS);
-        broadcasting.setContenido(new MensajeSimple(msg.getContenido().getUsuarioOperkall() + " en linea"));
+        MensajeWebsocket<String> broadcasting = new MensajeWebsocket(TipoMensaje.ACTUALIZAR_CONTACTOS);
+        broadcasting.setContenido(msg.getContenido().getUsuarioOperkall() + " en linea");
         websocketService.sendBroadcastMessage(broadcasting);
     }
 
