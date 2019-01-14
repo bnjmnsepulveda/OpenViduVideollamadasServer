@@ -71,5 +71,9 @@ public enum TipoMensaje {
     /**
      * Mensaje de chat recibido.
      */
-    MENSAJE_CHAT;
+    MENSAJE_CHAT,
+    /**
+     * notificacion de que un usuario esta escribiendo.
+     */
+    MENSAJE_ESCRIBIENDO;
 }
