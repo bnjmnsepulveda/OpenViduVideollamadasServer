@@ -61,8 +61,8 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
         if (sesionCerrada != null) {
             String contenido = sesionCerrada.getContactoAgente().getUsuarioOperkall() + " se ha desconectado";
             logger.info(contenido);
-            MensajeWebsocket<MensajeSimple> broadcasting = new MensajeWebsocket<>(TipoMensaje.ACTUALIZAR_CONTACTOS);
-            broadcasting.setContenido(new MensajeSimple(contenido));
+            MensajeWebsocket<String> broadcasting = new MensajeWebsocket(TipoMensaje.ACTUALIZAR_CONTACTOS);
+            broadcasting.setContenido(contenido);
             websocketService.sendBroadcastMessage(broadcasting);
         }
 
@@ -121,15 +121,27 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
         }
     }
 
-    private void registroUsuario(WebSocketSession session, MensajeWebsocket<ContactoAgente> msg) throws IOException {
-        websocketService.registerUser(session.getId(), msg.getContenido());
-        logger.info("Usuario " + msg.getContenido().getUsuarioOperkall() + " registrado en sesion websocket [id=" + session.getId() + "]");
-        logger.info("Se enviara mensaje de nuevo usuario en linea");
+    /**
+     * Registra un usuario en el servicio de websocket {@link com.adportas.videollamadas.service.WebsocketService}.
+     * @param session
+     * @param request
+     * @throws IOException 
+     */
+    private void registroUsuario(WebSocketSession session, MensajeWebsocket<ContactoAgente> request) throws IOException {
+        websocketService.registerUser(session.getId(), request.getContenido());
+        logger.info("Usuario " + request.getContenido().getUsuarioOperkall() + " registrado en sesion websocket [id=" + session.getId() + "]");
         MensajeWebsocket<String> broadcasting = new MensajeWebsocket(TipoMensaje.ACTUALIZAR_CONTACTOS);
-        broadcasting.setContenido(msg.getContenido().getUsuarioOperkall() + " en linea");
+        broadcasting.setContenido(request.getContenido().getUsuarioOperkall() + " en linea");
         websocketService.sendBroadcastMessage(broadcasting);
     }
 
+    /**
+     * Inicia un videollamada generando una videollamadaId, registra la 
+     * videollamada en {@link com.adportas.videollamadas.service.VideollamadaService }
+     * y enviia los mensajes a los participantes para que puedan aceptar la videollamada.
+     * @param request
+     * @throws IOException 
+     */
     private void iniciarVideoLLamada(MensajeWebsocket<MensajeVideoLLamada> request) throws IOException {
         logger.info("Iniciar videollamada [emisor="
                 + request.getContenido().getEmisor().getUsuarioOperkall()
@@ -176,6 +188,14 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
         timeoutVideollamada.start();
     }
 
+    /**
+     * Se acepta la llamada y se crea los token de autorizacion para establecer 
+     * la comunicacion de streaming de la videollamada.
+     * @param request
+     * @throws OpenViduJavaClientException
+     * @throws OpenViduHttpException
+     * @throws IOException 
+     */
     private void contestarVideoLLamada(MensajeWebsocket<MensajeContestarLLamada> request)
             throws OpenViduJavaClientException, OpenViduHttpException, IOException {
         String videollamadaId = request.getContenido().getVideollamadaId();
@@ -206,6 +226,13 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
         videollamadaService.actualizarEstadoVideollamada(videollamadaId, EstadoVideoLLamada.ESTABLECIDA);
     }
 
+    /**
+     * rechaza una videollamada entrante y notifica al Usuario emisor.
+     * @param request
+     * @throws IOException
+     * @throws OpenViduJavaClientException
+     * @throws OpenViduHttpException 
+     */
     private void rechazarVideoLLamada(MensajeWebsocket<MensajeCancelarLLamada> request) throws IOException, OpenViduJavaClientException, OpenViduHttpException {
         String videollamadaId = request.getContenido().getVideollamadaId();
         if (request.getContenido().getNotificarContactos() != null) {
@@ -216,6 +243,13 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
         }
     }
 
+    /**
+     * Envio de solicitud de cancelar videollamada.
+     * @param request
+     * @throws IOException
+     * @throws OpenViduJavaClientException
+     * @throws OpenViduHttpException 
+     */
     private void solicitudCancelarVideoLLamada(MensajeWebsocket<MensajeCancelarLLamada> request) throws IOException, OpenViduJavaClientException, OpenViduHttpException {
         String videollamadaId = request.getContenido().getVideollamadaId();
         for (ContactoAgente contacto : request.getContenido().getNotificarContactos()) {
@@ -224,6 +258,14 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
         videollamadaService.removeSession(videollamadaId);
     }
 
+    /**
+     * Termina la videollamada en estado ESTABLECIENDO.
+     * @param session
+     * @param request
+     * @throws OpenViduJavaClientException
+     * @throws OpenViduHttpException
+     * @throws IOException 
+     */
     private void terminarVideoLLamada(WebSocketSession session, MensajeWebsocket<MensajeSimple> request) throws OpenViduJavaClientException, OpenViduHttpException, IOException {
         String videollamadaId = request.getContenido().getMensaje();
         logger.info("Terminando videollamada [id=" + videollamadaId + "]");
