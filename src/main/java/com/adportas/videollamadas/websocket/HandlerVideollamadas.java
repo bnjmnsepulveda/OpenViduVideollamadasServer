@@ -58,7 +58,7 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
         logger.info("Removiendo sesion [" + session.getId() + "]");
         SesionWebsocket sesionCerrada = websocketService.findSesionWebsocketBySeessionId(session.getId());
         websocketService.removeSession(session);
-        if (sesionCerrada != null) {
+        if (sesionCerrada != null && sesionCerrada.getContactoAgente() != null) {
             String contenido = sesionCerrada.getContactoAgente().getUsuarioOperkall() + " se ha desconectado";
             logger.info(contenido);
             MensajeWebsocket<String> broadcasting = new MensajeWebsocket(TipoMensaje.ACTUALIZAR_CONTACTOS);

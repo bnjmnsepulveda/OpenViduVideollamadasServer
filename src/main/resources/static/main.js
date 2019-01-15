@@ -39,6 +39,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _component_video_video_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./component/video/video.component */ "./src/app/component/video/video.component.ts");
 /* harmony import */ var _service_authentication_authentication_guard__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./service/authentication/authentication.guard */ "./src/app/service/authentication/authentication.guard.ts");
 /* harmony import */ var _component_home_home_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./component/home/home.component */ "./src/app/component/home/home.component.ts");
+/* harmony import */ var _component_chat_contenedor_chat_contenedor_chat_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./component/chat/contenedor-chat/contenedor-chat.component */ "./src/app/component/chat/contenedor-chat/contenedor-chat.component.ts");
+
 
 
 
@@ -47,7 +49,8 @@ __webpack_require__.r(__webpack_exports__);
 
 var routes = [
     { path: '', component: _component_home_home_component__WEBPACK_IMPORTED_MODULE_5__["HomeComponent"] },
-    { path: 'video/:id', component: _component_video_video_component__WEBPACK_IMPORTED_MODULE_3__["VideoComponent"], canActivate: [_service_authentication_authentication_guard__WEBPACK_IMPORTED_MODULE_4__["AuthenticationGuard"]] }
+    { path: 'video/:id', component: _component_video_video_component__WEBPACK_IMPORTED_MODULE_3__["VideoComponent"], canActivate: [_service_authentication_authentication_guard__WEBPACK_IMPORTED_MODULE_4__["AuthenticationGuard"]] },
+    { path: 'chat/:emisor/:receptor', component: _component_chat_contenedor_chat_contenedor_chat_component__WEBPACK_IMPORTED_MODULE_6__["ContenedorChatComponent"], canActivate: [_service_authentication_authentication_guard__WEBPACK_IMPORTED_MODULE_4__["AuthenticationGuard"]] }
 ];
 var AppRoutingModule = /** @class */ (function () {
     function AppRoutingModule() {
@@ -83,7 +86,7 @@ module.exports = ".contenedor-app {\n    position: absolute;\n    width: 100%;\n
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<!--The content below is only a placeholder and can be replaced.-->\n<div class=\"contenedor-app\">\n  <div class=\"contenedor-titulo\">\n    <div>\n      <img src=\"/assets/img/logo-web-chat.svg\" width=\"60\" height=\"60\" />\n    </div>\n    <div><h3 style=\"margin-left: 20px;\">VideoLLamadas cckall</h3></div>\n  </div>\n  <!--SIDEBAR LEFT contactos de app cckall -->\n  <div class=\"contenedor-contactos\">\n    <app-contactos\n      *ngIf=\"conectado\"\n      [contactos]=\"contactos\"\n      (videollamadaContacto)=\"onVideollamadaContacto($event)\"\n      (seleccionarContacto)=\"onSeleccionarContacto($event)\"\n    >\n    </app-contactos>\n  </div>\n  <!--CONTENIDO DINAMICO-->\n  <div *ngIf=\"conectado\" class=\"contenedor-principal\">\n    <router-outlet></router-outlet>\n  </div>\n  <!--PANEL DE INICIO DE SESION-->\n  <app-inicio\n    *ngIf=\"!conectado\"\n    (iniciarSesion)=\"iniciarSesion($event)\"\n  ></app-inicio>\n  <!--NOTIFICACIONES GENERALES DE LA APP-->\n  <app-notificacion></app-notificacion>\n  <!--NOTIFICACION PARA VIDEOLLAMADA ENTRANTE O SALIENTE-->\n  <div class=\"contenedor-videocalling\">\n    <app-video-calling\n      [visible]=\"videoCallingVisible\"\n      [saliente]=\"saliente\"\n      [videollamada]=\"videollamada\"\n      [nombreContacto]=\"nombreContacto\"\n      [nombreContacto]=\"testing\"\n    >\n    </app-video-calling>\n  </div>\n</div>\n"
+module.exports = "<!--The content below is only a placeholder and can be replaced.-->\n<div class=\"contenedor-app\">\n  <div class=\"contenedor-titulo\">\n    <div>\n      <img src=\"/assets/img/logo-web-chat.svg\" width=\"60\" height=\"60\" />\n    </div>\n    <div><h3 style=\"margin-left: 20px;\">VideoLLamadas cckall</h3></div>\n  </div>\n  <!--SIDEBAR LEFT contactos de app cckall -->\n  <div class=\"contenedor-contactos\">\n    <app-contactos\n      *ngIf=\"conectado\"\n      [contactos]=\"contactos\"\n      (videollamadaContacto)=\"onVideollamadaContacto($event)\"\n      (seleccionarContacto)=\"onSeleccionarContacto($event)\"\n      (chatContacto)=\"onChatContacto($event)\"\n    >\n    </app-contactos>\n  </div>\n  <!--CONTENIDO DINAMICO-->\n  <div *ngIf=\"conectado\" class=\"contenedor-principal\">\n    <router-outlet></router-outlet>\n  </div>\n  <!--PANEL DE INICIO DE SESION-->\n  <app-inicio\n    *ngIf=\"!conectado\"\n    (iniciarSesion)=\"iniciarSesion($event)\"\n  ></app-inicio>\n  <!--NOTIFICACIONES GENERALES DE LA APP-->\n  <app-notificacion></app-notificacion>\n  <!--NOTIFICACION PARA VIDEOLLAMADA ENTRANTE O SALIENTE-->\n  <div class=\"contenedor-videocalling\">\n    <app-video-calling\n      [visible]=\"videoCallingVisible\"\n      [videollamadaSaliente]=\"saliente\"\n      [videollamada]=\"videollamada\"\n      [nombreContacto]=\"nombreContacto\"\n      [nombreContacto]=\"testing\"\n    >\n    </app-video-calling>\n  </div>\n</div>\n"
 
 /***/ }),
 
@@ -108,6 +111,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _service_session_service__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./service/session.service */ "./src/app/service/session.service.ts");
 /* harmony import */ var _service_video_llamada_service__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./service/video-llamada.service */ "./src/app/service/video-llamada.service.ts");
 /* harmony import */ var _service_notificacion_service__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./service/notificacion.service */ "./src/app/service/notificacion.service.ts");
+/* harmony import */ var _service_chat_service__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./service/chat.service */ "./src/app/service/chat.service.ts");
+
 
 
 
@@ -120,16 +125,24 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var AppComponent = /** @class */ (function () {
-    function AppComponent(router, contactoAgenteService, websocketService, sesionService, videollamadaService, notificacionService) {
+    function AppComponent(router, contactoAgenteService, websocketService, sesionService, videollamadaService, notificacionService, chatService) {
         this.router = router;
         this.contactoAgenteService = contactoAgenteService;
         this.websocketService = websocketService;
         this.sesionService = sesionService;
         this.videollamadaService = videollamadaService;
         this.notificacionService = notificacionService;
+        this.chatService = chatService;
         // --- propiedades para identificar usuario actual de app ---
         this.idAgente = 18362;
+        /**
+         * indica si se esta conectado al servicio de videollamadas.
+         */
         this.conectado = false;
+        /**
+         * Indica si existe una video llamada en proceso.
+         */
+        this.videollamadaEnProceso = false;
         // --- propiedades para notificacion de llamada saliente o entrante ---
         this.saliente = true;
         this.videoCallingVisible = false;
@@ -161,12 +174,12 @@ var AppComponent = /** @class */ (function () {
             _this.subscripcionMensajesWs = _this.websocketService.getMensajes()
                 .subscribe(function (msg) {
                 _this.processMensajeWebsocket(msg);
-                console.log('se ha procesado el mensaje');
             }, function (error) {
                 console.log('Error', error);
             }, function () {
                 console.log('se ha cerrado la conexion de websocket');
-                // this.router.navigate(['']);
+                _this.router.navigate(['/']);
+                _this.notificacionService.errorNotify('Se ha cerrado la conexion a servidor');
             });
             // --- enviar mensjae de registro de usuario ---
             var msgRegistro = {
@@ -184,23 +197,34 @@ var AppComponent = /** @class */ (function () {
     };
     AppComponent.prototype.onVideollamadaContacto = function (contacto) {
         if (this.conectado) {
+            if (this.videollamadaEnProceso) {
+                return;
+            }
             console.log('iniciar videollamada a contacto : ' + JSON.stringify(contacto));
-            this.saliente = true;
-            this.videoCallingVisible = true;
+            // --- variables de inicio de videollamada ---
+            this.saliente = true; // <----------------- indica que yo estoy llamando
+            this.videoCallingVisible = true; // <------ visibilidad de pantalla de llamada
+            this.videollamadaEnProceso = true; // <---- Indica que hay una videollamada ejecutandose (No debe entrar o salir ninguna)
+            // --- FIN variables videollamadas ---
             this.nombreContacto = contacto.id + ' - ' + contacto.nombre + ' ' + contacto.apellido;
-            var ms = new _domain_websocket_domain__WEBPACK_IMPORTED_MODULE_7__["MensajeWebsocket"]();
-            ms.tipoMensaje = _domain_websocket_domain__WEBPACK_IMPORTED_MODULE_7__["TipoMensaje"].INICIAR_VIDEO_LLAMADA;
+            var request = new _domain_websocket_domain__WEBPACK_IMPORTED_MODULE_7__["MensajeWebsocket"]();
+            request.tipoMensaje = _domain_websocket_domain__WEBPACK_IMPORTED_MODULE_7__["TipoMensaje"].INICIAR_VIDEO_LLAMADA;
             var contenido = new _domain_websocket_domain__WEBPACK_IMPORTED_MODULE_7__["MensajeVideoLLamada"]();
             contenido.emisor = this.usuarioApp;
             contenido.receptor = contacto;
-            ms.contenido = contenido;
-            console.log('enviando msg=' + JSON.stringify(ms));
+            request.contenido = contenido;
+            console.log('enviando msg=' + JSON.stringify(request));
             this.videollamada = contenido;
-            this.websocketService.enviarMensajeWebsocket(ms);
+            this.websocketService.enviarMensajeWebsocket(request);
         }
         else {
             console.log('Warning', 'No hay conexion establecida con servicio de videollamadas!!!');
         }
+    };
+    AppComponent.prototype.onChatContacto = function (contacto) {
+        var emisor = this.usuarioApp.usuarioChat.id;
+        var receptor = contacto.usuarioChat.id;
+        this.router.navigate(['chat/', emisor, receptor]);
     };
     AppComponent.prototype.processMensajeWebsocket = function (mensaje) {
         var _this = this;
@@ -211,6 +235,7 @@ var AppComponent = /** @class */ (function () {
                 console.log('Contenido recibido: ' + JSON.stringify(mensaje.contenido));
                 this.sesionService.guardarToken(mensaje.contenido.token);
                 this.sesionService.guardarVideollamadaId(mensaje.contenido.videollamadaId);
+                this.sesionService.guardarConversacionId(mensaje.contenido.conversacionId);
                 this.videoCallingVisible = false;
                 this.router.navigate(['/video', this.idAgente]);
                 break;
@@ -229,37 +254,66 @@ var AppComponent = /** @class */ (function () {
             // --- se recibe notificacion que se cancelo una llamada ---
             case _domain_websocket_domain__WEBPACK_IMPORTED_MODULE_7__["TipoMensaje"].CANCELAR_LLAMADA:
                 this.videoCallingVisible = false;
+                this.videollamadaEnProceso = false;
                 this.nombreContacto = undefined;
                 this.videollamada = undefined;
                 break;
             // --- Timeout videollamada ---
             case _domain_websocket_domain__WEBPACK_IMPORTED_MODULE_7__["TipoMensaje"].TIMEOUT_LLAMADA:
                 this.videoCallingVisible = false;
+                this.videollamadaEnProceso = false;
                 this.nombreContacto = undefined;
                 this.videollamada = undefined;
-                alert(mensaje.contenido.mensaje);
+                this.notificacionService.infoAlert(mensaje.contenido);
                 break;
             // --- Videollamada Terminada ---
             case _domain_websocket_domain__WEBPACK_IMPORTED_MODULE_7__["TipoMensaje"].TERMINAR_VIDEOLLAMADA:
                 this.videollamadaService.disconnectVideollamadaSession();
-                alert(mensaje.contenido.mensaje);
+                this.notificacionService.infoAlert(mensaje.contenido);
+                this.videollamadaEnProceso = false;
                 this.router.navigate(['']);
                 break;
             // --- Actualizacion contactos ---
             case _domain_websocket_domain__WEBPACK_IMPORTED_MODULE_7__["TipoMensaje"].ACTUALIZAR_CONTACTOS:
-                var subscribeContactos$_1 = this.contactoAgenteService.buscarTodosContactoAgente()
+                this.subscripcionContactos = this.contactoAgenteService.buscarTodosContactoAgente()
                     .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["map"])(function (contactos) {
                     return contactos.filter(function (c) { return c.id !== _this.usuarioApp.id; });
                 })).subscribe(function (contactos) {
                     _this.contactos = contactos;
-                    subscribeContactos$_1.unsubscribe();
+                    _this.subscripcionContactos.unsubscribe();
                 });
-                this.notificacionService.infoAlert(mensaje.contenido.mensaje);
+                this.notificacionService.infoAlert(mensaje.contenido);
+                break;
+            // --- Rechazar videollamada ---
+            case _domain_websocket_domain__WEBPACK_IMPORTED_MODULE_7__["TipoMensaje"].RECHAZAR_VIDEOLLAMADA:
+                this.videoCallingVisible = false;
+                this.videollamadaEnProceso = false;
+                this.nombreContacto = undefined;
+                this.videollamada = undefined;
+                break;
+            // --- MENSAJE CHAT ---
+            case _domain_websocket_domain__WEBPACK_IMPORTED_MODULE_7__["TipoMensaje"].MENSAJE_CHAT:
+                var nuevoMensaje = mensaje.contenido;
+                this.chatService.nuevoMensaje(nuevoMensaje);
+                // --- validar usuario distino de app para notificar msg ---
+                if (nuevoMensaje.mensajeChat.emisor.id !== this.usuarioApp.usuarioChat.id) {
+                    this.notificacionService.successNotify('Nuevo mensaje: ' + nuevoMensaje.mensajeChat.contenido);
+                }
+                break;
+            // --- USUARIO ESCRIBIENDO CHAT ---
+            case _domain_websocket_domain__WEBPACK_IMPORTED_MODULE_7__["TipoMensaje"].MENSAJE_ESCRIBIENDO:
+                var usrEscribiendo = {
+                    usuarioId: mensaje.contenido.usuarioId,
+                    texto: mensaje.contenido.mensaje
+                };
+                this.chatService.nuevoUsuarioEscribiendo(usrEscribiendo);
                 break;
         }
     };
     AppComponent.prototype.windowBeforeUnload = function () {
-        this.subscripcionMensajesWs.unsubscribe();
+        if (this.subscripcionMensajesWs) {
+            this.subscripcionMensajesWs.unsubscribe();
+        }
     };
     tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["HostListener"])('window:beforeunload'),
@@ -278,7 +332,8 @@ var AppComponent = /** @class */ (function () {
             _service_websocket_service__WEBPACK_IMPORTED_MODULE_6__["WebsocketService"],
             _service_session_service__WEBPACK_IMPORTED_MODULE_8__["SessionService"],
             _service_video_llamada_service__WEBPACK_IMPORTED_MODULE_9__["VideoLlamadaService"],
-            _service_notificacion_service__WEBPACK_IMPORTED_MODULE_10__["NotificacionService"]])
+            _service_notificacion_service__WEBPACK_IMPORTED_MODULE_10__["NotificacionService"],
+            _service_chat_service__WEBPACK_IMPORTED_MODULE_11__["ChatService"]])
     ], AppComponent);
     return AppComponent;
 }());
@@ -303,18 +358,28 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _app_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./app.component */ "./src/app/app.component.ts");
 /* harmony import */ var _component_inicio_inicio_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./component/inicio/inicio.component */ "./src/app/component/inicio/inicio.component.ts");
 /* harmony import */ var _component_contactos_contactos_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./component/contactos/contactos.component */ "./src/app/component/contactos/contactos.component.ts");
-/* harmony import */ var _component_chat_chat_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./component/chat/chat.component */ "./src/app/component/chat/chat.component.ts");
-/* harmony import */ var _component_video_video_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./component/video/video.component */ "./src/app/component/video/video.component.ts");
-/* harmony import */ var _app_routing_module__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! .//app-routing.module */ "./src/app/app-routing.module.ts");
-/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm5/http.js");
-/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @angular/forms */ "./node_modules/@angular/forms/fesm5/forms.js");
-/* harmony import */ var openvidu_angular__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! openvidu-angular */ "./node_modules/openvidu-angular/fesm5/openvidu-angular.js");
-/* harmony import */ var _provider_error_handler__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./provider/error-handler */ "./src/app/provider/error-handler.ts");
-/* harmony import */ var _component_user_video_user_video_component__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./component/user-video/user-video.component */ "./src/app/component/user-video/user-video.component.ts");
-/* harmony import */ var _component_video_calling_video_calling_component__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./component/video-calling/video-calling.component */ "./src/app/component/video-calling/video-calling.component.ts");
-/* harmony import */ var _component_layout_videollamada_layout_videollamada_component__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./component/layout-videollamada/layout-videollamada.component */ "./src/app/component/layout-videollamada/layout-videollamada.component.ts");
-/* harmony import */ var _component_home_home_component__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./component/home/home.component */ "./src/app/component/home/home.component.ts");
-/* harmony import */ var _component_notificacion_notificacion_component__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./component/notificacion/notificacion.component */ "./src/app/component/notificacion/notificacion.component.ts");
+/* harmony import */ var _component_video_video_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./component/video/video.component */ "./src/app/component/video/video.component.ts");
+/* harmony import */ var _app_routing_module__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! .//app-routing.module */ "./src/app/app-routing.module.ts");
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm5/http.js");
+/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @angular/forms */ "./node_modules/@angular/forms/fesm5/forms.js");
+/* harmony import */ var openvidu_angular__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! openvidu-angular */ "./node_modules/openvidu-angular/fesm5/openvidu-angular.js");
+/* harmony import */ var _provider_error_handler__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./provider/error-handler */ "./src/app/provider/error-handler.ts");
+/* harmony import */ var _component_user_video_user_video_component__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./component/user-video/user-video.component */ "./src/app/component/user-video/user-video.component.ts");
+/* harmony import */ var _component_video_calling_video_calling_component__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./component/video-calling/video-calling.component */ "./src/app/component/video-calling/video-calling.component.ts");
+/* harmony import */ var _component_layout_videollamada_layout_videollamada_component__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./component/layout-videollamada/layout-videollamada.component */ "./src/app/component/layout-videollamada/layout-videollamada.component.ts");
+/* harmony import */ var _component_home_home_component__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./component/home/home.component */ "./src/app/component/home/home.component.ts");
+/* harmony import */ var _component_notificacion_notificacion_component__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./component/notificacion/notificacion.component */ "./src/app/component/notificacion/notificacion.component.ts");
+/* harmony import */ var _component_chat_chat_chat_component__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./component/chat/chat/chat.component */ "./src/app/component/chat/chat/chat.component.ts");
+/* harmony import */ var _component_chat_barra_mensajes_barra_mensajes_component__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./component/chat/barra-mensajes/barra-mensajes.component */ "./src/app/component/chat/barra-mensajes/barra-mensajes.component.ts");
+/* harmony import */ var _component_chat_cabezera_chat_cabezera_chat_component__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./component/chat/cabezera-chat/cabezera-chat.component */ "./src/app/component/chat/cabezera-chat/cabezera-chat.component.ts");
+/* harmony import */ var _component_chat_contenedor_chat_contenedor_chat_component__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./component/chat/contenedor-chat/contenedor-chat.component */ "./src/app/component/chat/contenedor-chat/contenedor-chat.component.ts");
+/* harmony import */ var _component_chat_mensaje_mensaje_component__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./component/chat/mensaje/mensaje.component */ "./src/app/component/chat/mensaje/mensaje.component.ts");
+/* harmony import */ var _component_chat_videollamada_chat_videollamada_chat_component__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./component/chat/videollamada-chat/videollamada-chat.component */ "./src/app/component/chat/videollamada-chat/videollamada-chat.component.ts");
+
+
+
+
+
 
 
 
@@ -342,25 +407,30 @@ var AppModule = /** @class */ (function () {
                 _app_component__WEBPACK_IMPORTED_MODULE_3__["AppComponent"],
                 _component_inicio_inicio_component__WEBPACK_IMPORTED_MODULE_4__["InicioComponent"],
                 _component_contactos_contactos_component__WEBPACK_IMPORTED_MODULE_5__["ContactosComponent"],
-                _component_chat_chat_component__WEBPACK_IMPORTED_MODULE_6__["ChatComponent"],
-                _component_video_video_component__WEBPACK_IMPORTED_MODULE_7__["VideoComponent"],
-                _component_user_video_user_video_component__WEBPACK_IMPORTED_MODULE_13__["UserVideoComponent"],
-                _component_video_calling_video_calling_component__WEBPACK_IMPORTED_MODULE_14__["VideoCallingComponent"],
-                _component_layout_videollamada_layout_videollamada_component__WEBPACK_IMPORTED_MODULE_15__["LayoutVideollamadaComponent"],
-                _component_home_home_component__WEBPACK_IMPORTED_MODULE_16__["HomeComponent"],
-                _component_notificacion_notificacion_component__WEBPACK_IMPORTED_MODULE_17__["NotificacionComponent"]
+                _component_video_video_component__WEBPACK_IMPORTED_MODULE_6__["VideoComponent"],
+                _component_user_video_user_video_component__WEBPACK_IMPORTED_MODULE_12__["UserVideoComponent"],
+                _component_video_calling_video_calling_component__WEBPACK_IMPORTED_MODULE_13__["VideoCallingComponent"],
+                _component_layout_videollamada_layout_videollamada_component__WEBPACK_IMPORTED_MODULE_14__["LayoutVideollamadaComponent"],
+                _component_home_home_component__WEBPACK_IMPORTED_MODULE_15__["HomeComponent"],
+                _component_notificacion_notificacion_component__WEBPACK_IMPORTED_MODULE_16__["NotificacionComponent"],
+                _component_chat_chat_chat_component__WEBPACK_IMPORTED_MODULE_17__["ChatComponent"],
+                _component_chat_barra_mensajes_barra_mensajes_component__WEBPACK_IMPORTED_MODULE_18__["BarraMensajesComponent"],
+                _component_chat_cabezera_chat_cabezera_chat_component__WEBPACK_IMPORTED_MODULE_19__["CabezeraChatComponent"],
+                _component_chat_contenedor_chat_contenedor_chat_component__WEBPACK_IMPORTED_MODULE_20__["ContenedorChatComponent"],
+                _component_chat_mensaje_mensaje_component__WEBPACK_IMPORTED_MODULE_21__["MensajeComponent"],
+                _component_chat_videollamada_chat_videollamada_chat_component__WEBPACK_IMPORTED_MODULE_22__["VideollamadaChatComponent"],
             ],
             imports: [
                 _angular_platform_browser__WEBPACK_IMPORTED_MODULE_1__["BrowserModule"],
-                _app_routing_module__WEBPACK_IMPORTED_MODULE_8__["AppRoutingModule"],
-                _angular_common_http__WEBPACK_IMPORTED_MODULE_9__["HttpClientModule"],
-                _angular_forms__WEBPACK_IMPORTED_MODULE_10__["FormsModule"],
-                openvidu_angular__WEBPACK_IMPORTED_MODULE_11__["OpenviduSessionModule"]
+                _app_routing_module__WEBPACK_IMPORTED_MODULE_7__["AppRoutingModule"],
+                _angular_common_http__WEBPACK_IMPORTED_MODULE_8__["HttpClientModule"],
+                _angular_forms__WEBPACK_IMPORTED_MODULE_9__["FormsModule"],
+                openvidu_angular__WEBPACK_IMPORTED_MODULE_10__["OpenviduSessionModule"]
             ],
             providers: [
                 {
                     provide: _angular_core__WEBPACK_IMPORTED_MODULE_2__["ErrorHandler"],
-                    useClass: _provider_error_handler__WEBPACK_IMPORTED_MODULE_12__["GlobalErrorHandler"]
+                    useClass: _provider_error_handler__WEBPACK_IMPORTED_MODULE_11__["GlobalErrorHandler"]
                 }
             ],
             bootstrap: [_app_component__WEBPACK_IMPORTED_MODULE_3__["AppComponent"]]
@@ -373,32 +443,178 @@ var AppModule = /** @class */ (function () {
 
 /***/ }),
 
-/***/ "./src/app/component/chat/chat.component.css":
-/*!***************************************************!*\
-  !*** ./src/app/component/chat/chat.component.css ***!
-  \***************************************************/
+/***/ "./src/app/component/chat/barra-mensajes/barra-mensajes.component.css":
+/*!****************************************************************************!*\
+  !*** ./src/app/component/chat/barra-mensajes/barra-mensajes.component.css ***!
+  \****************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJzcmMvYXBwL2NvbXBvbmVudC9jaGF0L2NoYXQuY29tcG9uZW50LmNzcyJ9 */"
+module.exports = "\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJzcmMvYXBwL2NvbXBvbmVudC9jaGF0L2JhcnJhLW1lbnNhamVzL2JhcnJhLW1lbnNhamVzLmNvbXBvbmVudC5jc3MifQ== */"
 
 /***/ }),
 
-/***/ "./src/app/component/chat/chat.component.html":
-/*!****************************************************!*\
-  !*** ./src/app/component/chat/chat.component.html ***!
-  \****************************************************/
+/***/ "./src/app/component/chat/barra-mensajes/barra-mensajes.component.html":
+/*!*****************************************************************************!*\
+  !*** ./src/app/component/chat/barra-mensajes/barra-mensajes.component.html ***!
+  \*****************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<p>\n  chat works!\n</p>\n"
+module.exports = "<style>\n  .contenedor-barra-mensajes{\n    background-color: #e9f0f3;\n    height: 100%;\n  }\n</style>\n<div class=\"contenedor-barra-mensajes\">  \n  <input [(ngModel)]=\"textoMensaje\" (keyup)=\"onEscribiendo()\" type=\"text\" placeholder=\"Enviar mensaje...\" >\n  <button [disabled]=\"btnEnviarDeshabilitado\" (click)=\"onEnviarMensaje()\" class=\"btn-primario\">Enviar</button>\n  <button (click)=\"onAdjuntar()\" class=\"btn-secundario\">Adjuntar</button>\n  <button (click)=\"onPregrabados()\" class=\"btn-secundario\">Pregrabados</button>\n</div>\n"
 
 /***/ }),
 
-/***/ "./src/app/component/chat/chat.component.ts":
-/*!**************************************************!*\
-  !*** ./src/app/component/chat/chat.component.ts ***!
-  \**************************************************/
+/***/ "./src/app/component/chat/barra-mensajes/barra-mensajes.component.ts":
+/*!***************************************************************************!*\
+  !*** ./src/app/component/chat/barra-mensajes/barra-mensajes.component.ts ***!
+  \***************************************************************************/
+/*! exports provided: BarraMensajesComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BarraMensajesComponent", function() { return BarraMensajesComponent; });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+
+
+var BarraMensajesComponent = /** @class */ (function () {
+    function BarraMensajesComponent() {
+        this.btnEnviarDeshabilitado = true;
+        this.enviarMensaje = new _angular_core__WEBPACK_IMPORTED_MODULE_1__["EventEmitter"]();
+        this.escribiendo = new _angular_core__WEBPACK_IMPORTED_MODULE_1__["EventEmitter"]();
+        this.adjuntar = new _angular_core__WEBPACK_IMPORTED_MODULE_1__["EventEmitter"]();
+        this.pregrabados = new _angular_core__WEBPACK_IMPORTED_MODULE_1__["EventEmitter"]();
+    }
+    BarraMensajesComponent.prototype.ngOnInit = function () {
+    };
+    BarraMensajesComponent.prototype.onEnviarMensaje = function () {
+        this.enviarMensaje.emit(this.textoMensaje);
+        this.textoMensaje = '';
+        this.btnEnviarDeshabilitado = true;
+    };
+    BarraMensajesComponent.prototype.onEscribiendo = function () {
+        this.btnEnviarDeshabilitado = this.textoMensaje.length === 0;
+        this.escribiendo.emit(this.textoMensaje);
+    };
+    BarraMensajesComponent.prototype.onAdjuntar = function () {
+    };
+    BarraMensajesComponent.prototype.onPregrabados = function () {
+    };
+    tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Output"])(),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:type", Object)
+    ], BarraMensajesComponent.prototype, "enviarMensaje", void 0);
+    tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Output"])(),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:type", Object)
+    ], BarraMensajesComponent.prototype, "escribiendo", void 0);
+    tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Output"])(),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:type", Object)
+    ], BarraMensajesComponent.prototype, "adjuntar", void 0);
+    tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Output"])(),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:type", Object)
+    ], BarraMensajesComponent.prototype, "pregrabados", void 0);
+    BarraMensajesComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
+            selector: 'app-barra-mensajes',
+            template: __webpack_require__(/*! ./barra-mensajes.component.html */ "./src/app/component/chat/barra-mensajes/barra-mensajes.component.html"),
+            styles: [__webpack_require__(/*! ./barra-mensajes.component.css */ "./src/app/component/chat/barra-mensajes/barra-mensajes.component.css")]
+        }),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [])
+    ], BarraMensajesComponent);
+    return BarraMensajesComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "./src/app/component/chat/cabezera-chat/cabezera-chat.component.css":
+/*!**************************************************************************!*\
+  !*** ./src/app/component/chat/cabezera-chat/cabezera-chat.component.css ***!
+  \**************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJzcmMvYXBwL2NvbXBvbmVudC9jaGF0L2NhYmV6ZXJhLWNoYXQvY2FiZXplcmEtY2hhdC5jb21wb25lbnQuY3NzIn0= */"
+
+/***/ }),
+
+/***/ "./src/app/component/chat/cabezera-chat/cabezera-chat.component.html":
+/*!***************************************************************************!*\
+  !*** ./src/app/component/chat/cabezera-chat/cabezera-chat.component.html ***!
+  \***************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<p>\n  cabezera-chat works!\n</p>\n"
+
+/***/ }),
+
+/***/ "./src/app/component/chat/cabezera-chat/cabezera-chat.component.ts":
+/*!*************************************************************************!*\
+  !*** ./src/app/component/chat/cabezera-chat/cabezera-chat.component.ts ***!
+  \*************************************************************************/
+/*! exports provided: CabezeraChatComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CabezeraChatComponent", function() { return CabezeraChatComponent; });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+
+
+var CabezeraChatComponent = /** @class */ (function () {
+    function CabezeraChatComponent() {
+    }
+    CabezeraChatComponent.prototype.ngOnInit = function () {
+    };
+    CabezeraChatComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
+            selector: 'app-cabezera-chat',
+            template: __webpack_require__(/*! ./cabezera-chat.component.html */ "./src/app/component/chat/cabezera-chat/cabezera-chat.component.html"),
+            styles: [__webpack_require__(/*! ./cabezera-chat.component.css */ "./src/app/component/chat/cabezera-chat/cabezera-chat.component.css")]
+        }),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [])
+    ], CabezeraChatComponent);
+    return CabezeraChatComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "./src/app/component/chat/chat/chat.component.css":
+/*!********************************************************!*\
+  !*** ./src/app/component/chat/chat/chat.component.css ***!
+  \********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJzcmMvYXBwL2NvbXBvbmVudC9jaGF0L2NoYXQvY2hhdC5jb21wb25lbnQuY3NzIn0= */"
+
+/***/ }),
+
+/***/ "./src/app/component/chat/chat/chat.component.html":
+/*!*********************************************************!*\
+  !*** ./src/app/component/chat/chat/chat.component.html ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<div class=\"contenedor-chat\">\n  <ng-container *ngIf=\"conversacion\">\n    <div class=\"cabezera-chat\">\n      <h2>Chat {{ usuario.username }} </h2>\n      <ng-container *ngIf=\"usuariosEscribiendo\" >\n        <p *ngFor=\"let u of usuariosEscribiendo\" >{{ u.texto }}</p>\n      </ng-container>\n    </div>\n    <div #scrollMensajes class=\"contenedor-scroll-mensajes\">  \n      <ng-container *ngIf=\"conversacion.mensajes\">\n        <app-mensaje *ngFor=\"let m of conversacion.mensajes\" [usuario]=\"usuario\" [mensaje]=\"m\"> </app-mensaje>\n      </ng-container>    \n    </div>\n    <div class=\"footer-chat\">\n      <app-barra-mensajes \n      (enviarMensaje)=\"onEnviarMensaje($event)\"\n      (escribiendo)=\"onEscribiendo($event)\"></app-barra-mensajes>\n    </div>\n  </ng-container>\n</div>\n\n<style>\n  .contenedor-chat {\n    position: absolute;\n    top: 0;\n    right: 0;\n    left: 0;\n    bottom: 0;\n  }\n\n  .cabezera-chat{\n    background-color: gray;\n    color: white;\n    text-align: center;\n    position: absolute;\n    top: 0;\n    right: 0;\n    left: 0;\n    bottom: 90%;\n  }\n  .contenedor-scroll-mensajes {\n    overflow-x: hidden;\n    overflow-y: scroll;\n    height: auto;\n    position: absolute;\n    left: 0;\n    right: 0;\n    top: 10%;\n    bottom: 20%;\n    background-image: url('/assets/img/fondo_chat.jpg');\n  }\n  .footer-chat{\n    position: absolute;\n    left:0;\n    right: 0;\n    top:80%;\n    bottom: 0%;\n  }\n</style>\n"
+
+/***/ }),
+
+/***/ "./src/app/component/chat/chat/chat.component.ts":
+/*!*******************************************************!*\
+  !*** ./src/app/component/chat/chat/chat.component.ts ***!
+  \*******************************************************/
 /*! exports provided: ChatComponent */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -407,22 +623,365 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ChatComponent", function() { return ChatComponent; });
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+/* harmony import */ var src_app_domain_cckall_domain__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/domain/cckall.domain */ "./src/app/domain/cckall.domain.ts");
+/* harmony import */ var src_app_service_chat_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/service/chat.service */ "./src/app/service/chat.service.ts");
+
+
 
 
 var ChatComponent = /** @class */ (function () {
-    function ChatComponent() {
+    function ChatComponent(chatService) {
+        this.chatService = chatService;
+        this.enviarMensaje = new _angular_core__WEBPACK_IMPORTED_MODULE_1__["EventEmitter"]();
+        this.escribiendo = new _angular_core__WEBPACK_IMPORTED_MODULE_1__["EventEmitter"]();
     }
     ChatComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        this.mensajes = this.chatService.getMensajesChat()
+            .subscribe(function (msg) {
+            setTimeout(function () { return _this.scrollBottomContenedorMensajes(); }, 500);
+        });
     };
+    ChatComponent.prototype.ngOnDestroy = function () {
+        this.mensajes.unsubscribe();
+    };
+    ChatComponent.prototype.ngAfterViewInit = function () {
+        // --- se usa el evento scroll cuando ya se halla iniciado la vista y el elemnto referido no este undefined
+        this.scrollBottomContenedorMensajes();
+    };
+    ChatComponent.prototype.scrollBottomContenedorMensajes = function () {
+        if (this.scroll) {
+            var heightContainer = this.scroll.nativeElement.scrollHeight;
+            this.scroll.nativeElement.scrollTop = heightContainer;
+        }
+    };
+    ChatComponent.prototype.onEnviarMensaje = function (texto) {
+        var mensaje = {
+            emisor: this.usuario,
+            fecha: new Date(),
+            contenido: texto
+        };
+        this.enviarMensaje.emit(mensaje);
+    };
+    ChatComponent.prototype.onEscribiendo = function (texto) {
+        this.escribiendo.emit(texto);
+    };
+    tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Input"])(),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:type", src_app_domain_cckall_domain__WEBPACK_IMPORTED_MODULE_2__["UsuarioChat"])
+    ], ChatComponent.prototype, "usuario", void 0);
+    tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Input"])(),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:type", Object)
+    ], ChatComponent.prototype, "conversacion", void 0);
+    tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Input"])(),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:type", Array)
+    ], ChatComponent.prototype, "usuariosEscribiendo", void 0);
+    tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Output"])(),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:type", Object)
+    ], ChatComponent.prototype, "enviarMensaje", void 0);
+    tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Output"])(),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:type", Object)
+    ], ChatComponent.prototype, "escribiendo", void 0);
+    tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ViewChild"])('scrollMensajes'),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:type", _angular_core__WEBPACK_IMPORTED_MODULE_1__["ElementRef"])
+    ], ChatComponent.prototype, "scroll", void 0);
     ChatComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
             selector: 'app-chat',
-            template: __webpack_require__(/*! ./chat.component.html */ "./src/app/component/chat/chat.component.html"),
-            styles: [__webpack_require__(/*! ./chat.component.css */ "./src/app/component/chat/chat.component.css")]
+            template: __webpack_require__(/*! ./chat.component.html */ "./src/app/component/chat/chat/chat.component.html"),
+            styles: [__webpack_require__(/*! ./chat.component.css */ "./src/app/component/chat/chat/chat.component.css")]
         }),
-        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [])
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [src_app_service_chat_service__WEBPACK_IMPORTED_MODULE_3__["ChatService"]])
     ], ChatComponent);
     return ChatComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "./src/app/component/chat/contenedor-chat/contenedor-chat.component.css":
+/*!******************************************************************************!*\
+  !*** ./src/app/component/chat/contenedor-chat/contenedor-chat.component.css ***!
+  \******************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJzcmMvYXBwL2NvbXBvbmVudC9jaGF0L2NvbnRlbmVkb3ItY2hhdC9jb250ZW5lZG9yLWNoYXQuY29tcG9uZW50LmNzcyJ9 */"
+
+/***/ }),
+
+/***/ "./src/app/component/chat/contenedor-chat/contenedor-chat.component.html":
+/*!*******************************************************************************!*\
+  !*** ./src/app/component/chat/contenedor-chat/contenedor-chat.component.html ***!
+  \*******************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<ng-container *ngIf=\"usuario\">\n  <app-chat\n    [usuario]=\"usuario\"\n    [conversacion]=\"conversacion\"\n    (enviarMensaje)=\"onEnviarMensaje($event)\"\n    (escribiendo)=\"onEscribiendo($event)\"\n  ></app-chat>\n</ng-container>\n"
+
+/***/ }),
+
+/***/ "./src/app/component/chat/contenedor-chat/contenedor-chat.component.ts":
+/*!*****************************************************************************!*\
+  !*** ./src/app/component/chat/contenedor-chat/contenedor-chat.component.ts ***!
+  \*****************************************************************************/
+/*! exports provided: ContenedorChatComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ContenedorChatComponent", function() { return ContenedorChatComponent; });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+/* harmony import */ var src_app_service_chat_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/service/chat.service */ "./src/app/service/chat.service.ts");
+/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm5/router.js");
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! rxjs/operators */ "./node_modules/rxjs/_esm5/operators/index.js");
+/* harmony import */ var src_app_service_websocket_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! src/app/service/websocket.service */ "./src/app/service/websocket.service.ts");
+/* harmony import */ var _chat_chat_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../chat/chat.component */ "./src/app/component/chat/chat/chat.component.ts");
+
+
+
+
+
+
+
+var ContenedorChatComponent = /** @class */ (function () {
+    function ContenedorChatComponent(chatService, rutaActiva, websocketService) {
+        this.chatService = chatService;
+        this.rutaActiva = rutaActiva;
+        this.websocketService = websocketService;
+        this.usuariosEscribiendo = [];
+        this.estadoEscribiendo = false;
+        this.contadorLetras = 0;
+    }
+    ContenedorChatComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        this.usuario = this.chatService.usuarioApp().usuarioChat;
+        // --- se crea subscripcion a cambios de parametros en ruta activa ---
+        this.conversacion$ = this.rutaActiva.paramMap.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["switchMap"])(function (params) {
+            var emisor = +params.get('emisor');
+            var receptor = +params.get('receptor');
+            return _this.chatService.buscarConversacion([emisor, receptor]);
+        }));
+        this.conversacionSubscription$ = this.conversacion$.subscribe(function (conversacion) {
+            console.log('Se encontro conversacion ' + conversacion.id);
+            _this.conversacion = conversacion;
+            setTimeout(function () { return _this.hijo.scrollBottomContenedorMensajes(); }, 500);
+        });
+        this.mensajes$ = this.chatService.getMensajesChat()
+            .subscribe(function (msg) {
+            if (_this.conversacion.id === msg.conversacionId) {
+                console.log('se actualizara vista mensajes');
+                if (_this.conversacion.mensajes === null) {
+                    _this.conversacion.mensajes = [];
+                }
+                _this.conversacion.mensajes.push(msg.mensajeChat);
+            }
+        });
+        this.escribiendoSubscription$ = this.chatService.getUsuariosEscribiendo()
+            .subscribe(function (escribiendo) {
+            _this.usuariosEscribiendo.push(escribiendo);
+        });
+    };
+    ContenedorChatComponent.prototype.ngOnDestroy = function () {
+        this.mensajes$.unsubscribe();
+        this.conversacionSubscription$.unsubscribe();
+        this.escribiendoSubscription$.unsubscribe();
+    };
+    ContenedorChatComponent.prototype.onEnviarMensaje = function (mensaje) {
+        this.chatService.enviarMensaje(this.conversacion.id, mensaje).subscribe();
+    };
+    ContenedorChatComponent.prototype.onEscribiendo = function (texto) {
+        // TODO: implementar logica que no envie mensajes seguidos
+        // this.chatService.enviarEscribiendo(this.conversacion.id, this.usuario.id).subscribe();
+    };
+    tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ViewChild"])(_chat_chat_component__WEBPACK_IMPORTED_MODULE_6__["ChatComponent"]),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:type", _chat_chat_component__WEBPACK_IMPORTED_MODULE_6__["ChatComponent"])
+    ], ContenedorChatComponent.prototype, "hijo", void 0);
+    ContenedorChatComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
+            selector: 'app-contenedor-chat',
+            template: __webpack_require__(/*! ./contenedor-chat.component.html */ "./src/app/component/chat/contenedor-chat/contenedor-chat.component.html"),
+            styles: [__webpack_require__(/*! ./contenedor-chat.component.css */ "./src/app/component/chat/contenedor-chat/contenedor-chat.component.css")]
+        }),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [src_app_service_chat_service__WEBPACK_IMPORTED_MODULE_2__["ChatService"],
+            _angular_router__WEBPACK_IMPORTED_MODULE_3__["ActivatedRoute"],
+            src_app_service_websocket_service__WEBPACK_IMPORTED_MODULE_5__["WebsocketService"]])
+    ], ContenedorChatComponent);
+    return ContenedorChatComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "./src/app/component/chat/mensaje/mensaje.component.css":
+/*!**************************************************************!*\
+  !*** ./src/app/component/chat/mensaje/mensaje.component.css ***!
+  \**************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJzcmMvYXBwL2NvbXBvbmVudC9jaGF0L21lbnNhamUvbWVuc2FqZS5jb21wb25lbnQuY3NzIn0= */"
+
+/***/ }),
+
+/***/ "./src/app/component/chat/mensaje/mensaje.component.html":
+/*!***************************************************************!*\
+  !*** ./src/app/component/chat/mensaje/mensaje.component.html ***!
+  \***************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<style>\n  .contenedor-mensaje {\n    width: 100%;\n    padding: 5px;\n  }\n\n  .avatar-mensaje{\n    width: 70px;\n    margin: 10px;\n  }\n\n  .globo-mensaje {\n    background-color: wheat;\n    width: calc(100% - 90px);\n    display: inline-block;\n    padding: 10px;\n    border-radius: 10px;\n    box-sizing: border-box;\n  }\n\n  .fecha-envio {\n    font-size: 11px;\n  }\n  .globo-mensaje .nombre-usuario {\n    font-weight: bold;\n    color:blueviolet;\n  }\n\n  .usuario .avatar-mensaje {\n    float: right;\n  }\n\n  .usuario .globo-mensaje{\n    border-top-right-radius: 0px;\n    background-color: #e9f0f3;\n  }\n\n  .contraparte .avatar-mensaje {\n    float: left;\n  }\n\n  .contraparte .globo-mensaje{\n    border-top-left-radius: 0px;\n    width: calc(100% - 100px);\n  }\n\n</style>\n\n<div class=\"contenedor-mensaje {{cssMensaje}}\">\n  <img src=\"/assets/img/agente.svg\" width=\"70\" class=\"avatar-mensaje\" />\n  <div class=\"globo-mensaje\">\n    <p class=\"nombre-usuario\">{{ mensaje.emisor.nombre }} {{ mensaje.emisor.apellido }}</p>\n    <span>{{ mensaje.contenido }}</span>\n    <p class=\"fecha-envio\">Enviado: {{ mensaje.fecha | date: \"HH:mm - MM/dd/yyyy\" }}</p>\n  </div>\n</div>\n"
+
+/***/ }),
+
+/***/ "./src/app/component/chat/mensaje/mensaje.component.ts":
+/*!*************************************************************!*\
+  !*** ./src/app/component/chat/mensaje/mensaje.component.ts ***!
+  \*************************************************************/
+/*! exports provided: MensajeComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MensajeComponent", function() { return MensajeComponent; });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+/* harmony import */ var src_app_domain_cckall_domain__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/domain/cckall.domain */ "./src/app/domain/cckall.domain.ts");
+
+
+
+var MensajeComponent = /** @class */ (function () {
+    function MensajeComponent() {
+    }
+    MensajeComponent.prototype.ngOnInit = function () {
+        if (this.mensaje.emisor.id === this.usuario.id) {
+            this.cssMensaje = 'usuario';
+        }
+        else {
+            this.cssMensaje = 'contraparte';
+        }
+    };
+    tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Input"])(),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:type", src_app_domain_cckall_domain__WEBPACK_IMPORTED_MODULE_2__["UsuarioChat"])
+    ], MensajeComponent.prototype, "usuario", void 0);
+    tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Input"])(),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:type", Object)
+    ], MensajeComponent.prototype, "mensaje", void 0);
+    MensajeComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
+            selector: 'app-mensaje',
+            template: __webpack_require__(/*! ./mensaje.component.html */ "./src/app/component/chat/mensaje/mensaje.component.html"),
+            styles: [__webpack_require__(/*! ./mensaje.component.css */ "./src/app/component/chat/mensaje/mensaje.component.css")]
+        }),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [])
+    ], MensajeComponent);
+    return MensajeComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "./src/app/component/chat/videollamada-chat/videollamada-chat.component.css":
+/*!**********************************************************************************!*\
+  !*** ./src/app/component/chat/videollamada-chat/videollamada-chat.component.css ***!
+  \**********************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJzcmMvYXBwL2NvbXBvbmVudC9jaGF0L3ZpZGVvbGxhbWFkYS1jaGF0L3ZpZGVvbGxhbWFkYS1jaGF0LmNvbXBvbmVudC5jc3MifQ== */"
+
+/***/ }),
+
+/***/ "./src/app/component/chat/videollamada-chat/videollamada-chat.component.html":
+/*!***********************************************************************************!*\
+  !*** ./src/app/component/chat/videollamada-chat/videollamada-chat.component.html ***!
+  \***********************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<ng-container *ngIf=\"usuario\">\n  <app-chat\n    [usuario]=\"usuario\"\n    [conversacion]=\"conversacion\"\n    (enviarMensaje)=\"onEnviarMensaje($event)\"\n    (escribiendo)=\"onEscribiendo($event)\"\n  ></app-chat>\n</ng-container>\n"
+
+/***/ }),
+
+/***/ "./src/app/component/chat/videollamada-chat/videollamada-chat.component.ts":
+/*!*********************************************************************************!*\
+  !*** ./src/app/component/chat/videollamada-chat/videollamada-chat.component.ts ***!
+  \*********************************************************************************/
+/*! exports provided: VideollamadaChatComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VideollamadaChatComponent", function() { return VideollamadaChatComponent; });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+/* harmony import */ var src_app_domain_cckall_domain__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/domain/cckall.domain */ "./src/app/domain/cckall.domain.ts");
+/* harmony import */ var src_app_service_chat_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/service/chat.service */ "./src/app/service/chat.service.ts");
+/* harmony import */ var src_app_service_session_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! src/app/service/session.service */ "./src/app/service/session.service.ts");
+
+
+
+
+
+var VideollamadaChatComponent = /** @class */ (function () {
+    function VideollamadaChatComponent(chatService, sesionService) {
+        this.chatService = chatService;
+        this.sesionService = sesionService;
+    }
+    VideollamadaChatComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        this.subscripcionMensajes = this.chatService.getMensajesChat()
+            .subscribe(function (msg) {
+            if (_this.conversacion.id === msg.conversacionId) {
+                console.log('se actualizara vista mensajes');
+                if (_this.conversacion.mensajes === null) {
+                    _this.conversacion.mensajes = [];
+                }
+                _this.conversacion.mensajes.push(msg.mensajeChat);
+            }
+        });
+    };
+    VideollamadaChatComponent.prototype.ngOnDestroy = function () {
+        this.subscripcionMensajes.unsubscribe();
+    };
+    VideollamadaChatComponent.prototype.onEnviarMensaje = function (mensaje) {
+        this.chatService.enviarMensaje(this.conversacion.id, mensaje).subscribe();
+    };
+    VideollamadaChatComponent.prototype.onEscribiendo = function (texto) {
+        // TODO: implementar logica que no envie mensajes seguidos
+        // this.chatService.enviarEscribiendo(this.conversacion.id, this.usuario.id).subscribe();
+    };
+    tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Input"])(),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:type", src_app_domain_cckall_domain__WEBPACK_IMPORTED_MODULE_2__["UsuarioChat"])
+    ], VideollamadaChatComponent.prototype, "usuario", void 0);
+    tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Input"])(),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:type", Object)
+    ], VideollamadaChatComponent.prototype, "conversacion", void 0);
+    VideollamadaChatComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
+            selector: 'app-videollamada-chat',
+            template: __webpack_require__(/*! ./videollamada-chat.component.html */ "./src/app/component/chat/videollamada-chat/videollamada-chat.component.html"),
+            styles: [__webpack_require__(/*! ./videollamada-chat.component.css */ "./src/app/component/chat/videollamada-chat/videollamada-chat.component.css")]
+        }),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [src_app_service_chat_service__WEBPACK_IMPORTED_MODULE_3__["ChatService"],
+            src_app_service_session_service__WEBPACK_IMPORTED_MODULE_4__["SessionService"]])
+    ], VideollamadaChatComponent);
+    return VideollamadaChatComponent;
 }());
 
 
@@ -447,7 +1006,7 @@ module.exports = "ul {\n  list-style: none;\n}\n\n.componente-contactos {\n  bac
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"componente-contactos\">\n  <h3 class=\"titulo-contactos\">Lista de contactos</h3>\n  <ul class=\"lista-contactos\">\n    <li *ngFor=\"let contacto of contactos\" class=\"item-contacto\">\n      <div [ngClass]=\"{'circulo': true, 'circulo-contacto-desconectado': !contacto.enLinea,'circulo-contacto-conectado': contacto.enLinea}\"></div>\n      <!--info de contacto-->\n      <span (click)=\"onSeleccionarContacto(contacto)\" class=\"nombre-contacto\"\n        >{{ contacto.id }} - {{ contacto.nombre }} {{ contacto.apellido }}\n      </span>\n      <span (click)=\"onChat(contacto)\" \n      [ngClass]=\"{'chat-desconectado': !contacto.enLinea,'chat-conectado': contacto.enLinea}\">chat </span>\n      <!--validacion contacto en linea para elegir el ng-template-->\n      <ng-container\n        *ngIf=\"contacto.enLinea; then conectado; else desconectado\"\n      ></ng-container>\n      <div class=\"linea-separadora-hotizontal\"></div>\n      <!--boton para contacto en linea-->\n      <ng-template #conectado>\n        <span (click)=\"onVideollamada(contacto)\" class=\"span-videollamada\"\n          >videollamada</span>\n      </ng-template>\n      <!-- boton para contacto desconectado-->\n      <ng-template #desconectado>\n        <span class=\"span-desconectado\">videollamada</span>\n      </ng-template>\n    </li>\n  </ul>\n</div>\n"
+module.exports = "<div class=\"componente-contactos\">\n  <h3 class=\"titulo-contactos\">Lista de contactos</h3>\n  <ul class=\"lista-contactos\">\n    <li *ngFor=\"let contacto of contactos\" class=\"item-contacto\">\n      <div [ngClass]=\"{\n        'circulo': true, \n        'circulo-contacto-desconectado': !contacto.enLinea,\n        'circulo-contacto-conectado': contacto.enLinea\n      }\"></div>\n      <!--info de contacto-->\n      <span (click)=\"onSeleccionarContacto(contacto)\" class=\"nombre-contacto\"\n        >{{ contacto.id }} - {{ contacto.nombre }} {{ contacto.apellido }}\n      </span>\n      <span (click)=\"onChatContacto(contacto)\" \n      [ngClass]=\"{\n        'chat-desconectado': !contacto.enLinea,\n        'chat-conectado': contacto.enLinea\n      }\">chat </span>\n      <!--validacion contacto en linea para elegir el ng-template-->\n      <ng-container\n        *ngIf=\"contacto.enLinea; then conectado; else desconectado\"\n      ></ng-container>\n      <div class=\"linea-separadora-hotizontal\"></div>\n      <!--boton para contacto en linea-->\n      <ng-template #conectado>\n        <span (click)=\"onVideollamada(contacto)\" class=\"span-videollamada\"\n          >videollamada</span>\n      </ng-template>\n      <!-- boton para contacto desconectado-->\n      <ng-template #desconectado>\n        <span class=\"span-desconectado\">videollamada</span>\n      </ng-template>\n    </li>\n  </ul>\n</div>\n"
 
 /***/ }),
 
@@ -867,7 +1426,7 @@ module.exports = ".contenedor-video-calling{\n    background-color: rgba(0, 0, 0
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"visible\" class=\"contenedor-video-calling\">\n  <div class=\"nombre-contacto-videollamada\">\n    <h3 class=\"videollamada-en-curso blink\">VideoLLamada en curso...</h3>\n    <h2>{{ nombreContacto }}</h2>\n  </div>\n  <div *ngIf=\"!saliente\">\n    <button (click)=\"onContestarLLamada(videollamada)\" class=\"btn-videollamada btn-primario\">\n      Contestar llamada\n    </button>\n  </div>\n  <div *ngIf=\"saliente\">\n    <button (click)=\"onCancelarLLamada(videollamada)\" class=\"btn-videollamada btn-primario\" >Cancelar llamada</button>\n  </div>\n</div>\n"
+module.exports = "<!--visibilidad componente-->\n<div *ngIf=\"visible\" class=\"contenedor-video-calling\">\n  <!--info de contacto -->\n  <div class=\"nombre-contacto-videollamada\">\n    <h3 class=\"videollamada-en-curso blink\">VideoLLamada en curso...</h3>\n    <h2>{{ nombreContacto }}</h2>\n  </div>\n  <ng-container *ngIf=\"videollamadaSaliente; then saliente; else entrante\"></ng-container>\n  <ng-template #saliente>\n    <button (click)=\"onCancelarLLamada(videollamada)\" class=\"btn-videollamada btn-primario\" >Cancelar llamada</button>\n  </ng-template>\n  <ng-template #entrante>\n    <button (click)=\"onContestarLLamada(videollamada)\" class=\"btn-videollamada btn-primario\">Contestar llamada</button>\n    <button (click)=\"onRechazarLLamada(videollamada)\" class=\"btn-videollamada btn-eliminar\">Rechazar llamada</button>\n  </ng-template>\n</div>"
 
 /***/ }),
 
@@ -896,7 +1455,6 @@ var VideoCallingComponent = /** @class */ (function () {
         this.contestarLLamada = new _angular_core__WEBPACK_IMPORTED_MODULE_1__["EventEmitter"]();
     }
     VideoCallingComponent.prototype.ngOnInit = function () {
-        // this.visible = true;
     };
     VideoCallingComponent.prototype.onCancelarLLamada = function (mensajeVideollamada) {
         var contenido = {
@@ -924,6 +1482,20 @@ var VideoCallingComponent = /** @class */ (function () {
         this.websocketService.enviarMensajeWebsocket(req);
         // this.contestarLLamada.emit(mensajeVideollamada);
     };
+    VideoCallingComponent.prototype.onRechazarLLamada = function (mensajeVideollamada) {
+        var contenido = {
+            tipoMensaje: src_app_domain_websocket_domain__WEBPACK_IMPORTED_MODULE_2__["TipoMensaje"].RECHAZAR_VIDEOLLAMADA,
+            contenido: {
+                videollamadaId: mensajeVideollamada.videollamadaId,
+                notificarContactos: [
+                    mensajeVideollamada.emisor,
+                    mensajeVideollamada.receptor
+                ]
+            }
+        };
+        this.websocketService.enviarContenidoMensajeWebsocket(contenido);
+        // this.contestarLLamada.emit(mensajeVideollamada);
+    };
     tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Input"])(),
         tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:type", Boolean)
@@ -939,7 +1511,7 @@ var VideoCallingComponent = /** @class */ (function () {
     tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Input"])(),
         tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:type", Boolean)
-    ], VideoCallingComponent.prototype, "saliente", void 0);
+    ], VideoCallingComponent.prototype, "videollamadaSaliente", void 0);
     tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Output"])(),
         tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:type", Object)
@@ -970,7 +1542,7 @@ var VideoCallingComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = ".contenedor-videollamada {\n  position: absolute;\n  background-color: #d7dee1;\n  width: 100%;\n  height: 100%;\n}\n\n.contenedor-titulo-videollamada {\n  position: absolute;\n  width: 100%;\n  height: 60px;\n  top: 0;\n  text-align: center;\n}\n\n.contenedor-herramientas-videollamada {\n  position: absolute;\n  width: 100%;\n  height: 100px;\n  bottom: 0px;\n}\n\n.contenedor-herramientas-videollamada div {\n  width: 30%;\n  margin: 0 auto;\n}\n\n.contenedor-herramientas-videollamada div div {\n  display: inline-block;\n  width: 100px;\n  margin: 20px 0 0 20px;\n}\n\n.video-local {\n  position: absolute;\n  width: 320px;\n  height: 240px;\n  left: 640px;\n}\n\n.video-remoto {\n  position: absolute;\n  left: 0;\n  width: 960px;\n  height: 720px;\n}\n\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvY29tcG9uZW50L3ZpZGVvL3ZpZGVvLmNvbXBvbmVudC5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRSxtQkFBbUI7RUFDbkIsMEJBQTBCO0VBQzFCLFlBQVk7RUFDWixhQUFhO0NBQ2Q7O0FBRUQ7RUFDRSxtQkFBbUI7RUFDbkIsWUFBWTtFQUNaLGFBQWE7RUFDYixPQUFPO0VBQ1AsbUJBQW1CO0NBQ3BCOztBQUVEO0VBQ0UsbUJBQW1CO0VBQ25CLFlBQVk7RUFDWixjQUFjO0VBQ2QsWUFBWTtDQUNiOztBQUVEO0VBQ0UsV0FBVztFQUNYLGVBQWU7Q0FDaEI7O0FBRUQ7RUFDRSxzQkFBc0I7RUFDdEIsYUFBYTtFQUNiLHNCQUFzQjtDQUN2Qjs7QUFFRDtFQUNFLG1CQUFtQjtFQUNuQixhQUFhO0VBQ2IsY0FBYztFQUNkLFlBQVk7Q0FDYjs7QUFFRDtFQUNFLG1CQUFtQjtFQUNuQixRQUFRO0VBQ1IsYUFBYTtFQUNiLGNBQWM7Q0FDZiIsImZpbGUiOiJzcmMvYXBwL2NvbXBvbmVudC92aWRlby92aWRlby5jb21wb25lbnQuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLmNvbnRlbmVkb3ItdmlkZW9sbGFtYWRhIHtcbiAgcG9zaXRpb246IGFic29sdXRlO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiAjZDdkZWUxO1xuICB3aWR0aDogMTAwJTtcbiAgaGVpZ2h0OiAxMDAlO1xufVxuXG4uY29udGVuZWRvci10aXR1bG8tdmlkZW9sbGFtYWRhIHtcbiAgcG9zaXRpb246IGFic29sdXRlO1xuICB3aWR0aDogMTAwJTtcbiAgaGVpZ2h0OiA2MHB4O1xuICB0b3A6IDA7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbn1cblxuLmNvbnRlbmVkb3ItaGVycmFtaWVudGFzLXZpZGVvbGxhbWFkYSB7XG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcbiAgd2lkdGg6IDEwMCU7XG4gIGhlaWdodDogMTAwcHg7XG4gIGJvdHRvbTogMHB4O1xufVxuXG4uY29udGVuZWRvci1oZXJyYW1pZW50YXMtdmlkZW9sbGFtYWRhIGRpdiB7XG4gIHdpZHRoOiAzMCU7XG4gIG1hcmdpbjogMCBhdXRvO1xufVxuXG4uY29udGVuZWRvci1oZXJyYW1pZW50YXMtdmlkZW9sbGFtYWRhIGRpdiBkaXYge1xuICBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7XG4gIHdpZHRoOiAxMDBweDtcbiAgbWFyZ2luOiAyMHB4IDAgMCAyMHB4O1xufVxuXG4udmlkZW8tbG9jYWwge1xuICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gIHdpZHRoOiAzMjBweDtcbiAgaGVpZ2h0OiAyNDBweDtcbiAgbGVmdDogNjQwcHg7XG59XG5cbi52aWRlby1yZW1vdG8ge1xuICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gIGxlZnQ6IDA7XG4gIHdpZHRoOiA5NjBweDtcbiAgaGVpZ2h0OiA3MjBweDtcbn1cbiJdfQ== */"
+module.exports = ".contenedor-videollamada {\n  position: absolute;\n  left: 0;\n  background-color: #d7dee1;\n  width: 70%;\n  height: 100%;\n}\n\n.contenedor-chat{\n  position: absolute;\n  right: 0;\n  width: 30%;\n  height: 100%;\n}\n\n.contenedor-titulo-videollamada {\n  position: absolute;\n  width: 100%;\n  height: 60px;\n  top: 0;\n  text-align: center;\n}\n\n.contenedor-herramientas-videollamada {\n  position: absolute;\n  width: 100%;\n  height: 100px;\n  bottom: 0px;\n}\n\n.contenedor-herramientas-videollamada div {\n  width: 30%;\n  margin: 0 auto;\n}\n\n.contenedor-herramientas-videollamada div div {\n  display: inline-block;\n  width: 100px;\n  margin: 20px 0 0 20px;\n}\n\n.video-local {\n  position: absolute;\n  width: 320px;\n  height: 240px;\n  left: 640px;\n}\n\n.video-remoto {\n  position: absolute;\n  left: 0;\n  width: 960px;\n  height: 720px;\n}\n\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvY29tcG9uZW50L3ZpZGVvL3ZpZGVvLmNvbXBvbmVudC5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRSxtQkFBbUI7RUFDbkIsUUFBUTtFQUNSLDBCQUEwQjtFQUMxQixXQUFXO0VBQ1gsYUFBYTtDQUNkOztBQUVEO0VBQ0UsbUJBQW1CO0VBQ25CLFNBQVM7RUFDVCxXQUFXO0VBQ1gsYUFBYTtDQUNkOztBQUVEO0VBQ0UsbUJBQW1CO0VBQ25CLFlBQVk7RUFDWixhQUFhO0VBQ2IsT0FBTztFQUNQLG1CQUFtQjtDQUNwQjs7QUFFRDtFQUNFLG1CQUFtQjtFQUNuQixZQUFZO0VBQ1osY0FBYztFQUNkLFlBQVk7Q0FDYjs7QUFFRDtFQUNFLFdBQVc7RUFDWCxlQUFlO0NBQ2hCOztBQUVEO0VBQ0Usc0JBQXNCO0VBQ3RCLGFBQWE7RUFDYixzQkFBc0I7Q0FDdkI7O0FBRUQ7RUFDRSxtQkFBbUI7RUFDbkIsYUFBYTtFQUNiLGNBQWM7RUFDZCxZQUFZO0NBQ2I7O0FBRUQ7RUFDRSxtQkFBbUI7RUFDbkIsUUFBUTtFQUNSLGFBQWE7RUFDYixjQUFjO0NBQ2YiLCJmaWxlIjoic3JjL2FwcC9jb21wb25lbnQvdmlkZW8vdmlkZW8uY29tcG9uZW50LmNzcyIsInNvdXJjZXNDb250ZW50IjpbIi5jb250ZW5lZG9yLXZpZGVvbGxhbWFkYSB7XG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcbiAgbGVmdDogMDtcbiAgYmFja2dyb3VuZC1jb2xvcjogI2Q3ZGVlMTtcbiAgd2lkdGg6IDcwJTtcbiAgaGVpZ2h0OiAxMDAlO1xufVxuXG4uY29udGVuZWRvci1jaGF0e1xuICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gIHJpZ2h0OiAwO1xuICB3aWR0aDogMzAlO1xuICBoZWlnaHQ6IDEwMCU7XG59XG5cbi5jb250ZW5lZG9yLXRpdHVsby12aWRlb2xsYW1hZGEge1xuICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gIHdpZHRoOiAxMDAlO1xuICBoZWlnaHQ6IDYwcHg7XG4gIHRvcDogMDtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xufVxuXG4uY29udGVuZWRvci1oZXJyYW1pZW50YXMtdmlkZW9sbGFtYWRhIHtcbiAgcG9zaXRpb246IGFic29sdXRlO1xuICB3aWR0aDogMTAwJTtcbiAgaGVpZ2h0OiAxMDBweDtcbiAgYm90dG9tOiAwcHg7XG59XG5cbi5jb250ZW5lZG9yLWhlcnJhbWllbnRhcy12aWRlb2xsYW1hZGEgZGl2IHtcbiAgd2lkdGg6IDMwJTtcbiAgbWFyZ2luOiAwIGF1dG87XG59XG5cbi5jb250ZW5lZG9yLWhlcnJhbWllbnRhcy12aWRlb2xsYW1hZGEgZGl2IGRpdiB7XG4gIGRpc3BsYXk6IGlubGluZS1ibG9jaztcbiAgd2lkdGg6IDEwMHB4O1xuICBtYXJnaW46IDIwcHggMCAwIDIwcHg7XG59XG5cbi52aWRlby1sb2NhbCB7XG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcbiAgd2lkdGg6IDMyMHB4O1xuICBoZWlnaHQ6IDI0MHB4O1xuICBsZWZ0OiA2NDBweDtcbn1cblxuLnZpZGVvLXJlbW90byB7XG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcbiAgbGVmdDogMDtcbiAgd2lkdGg6IDk2MHB4O1xuICBoZWlnaHQ6IDcyMHB4O1xufVxuIl19 */"
 
 /***/ }),
 
@@ -981,7 +1553,7 @@ module.exports = ".contenedor-videollamada {\n  position: absolute;\n  backgroun
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"contenedor-videollamada\">\n  \n\n  <!-- video element remotos -->\n  <div *ngFor=\"let sub of subscribers\" class=\"video-remoto\">\n    <app-user-video\n      nombreContacto=\"Usuario remoto\"\n      anchoVideo=\"960\"\n      altoVideo=\"720\"\n      [streamManager]=\"sub\"\n    ></app-user-video>\n    <div class=\"contenedor-herramientas-videollamada background-transparente\">\n      <div>\n        <div>\n          <button (click)=\"disconnectVideollamadaSession()\" class=\"btn-eliminar\">\n            Colgar\n          </button>\n        </div>\n        <div><button class=\"btn-primario\">Mensaje</button></div>\n      </div>\n    </div>\n  </div>\n  <div *ngIf=\"subscribers.lenght == 0\" class=\"video-local\">\n    <img src=\"/assets/img/webrtc.png\" width=\"960\" height=\"720\" >\n  </div>\n  <!-- video element local-->\n  <div *ngIf=\"publisher\" class=\"video-local\">\n    <app-user-video\n      nombreContacto=\"Usuario local\"\n      anchoVideo=\"320\"\n      altoVideo=\"240\"\n      [streamManager]=\"publisher\"\n    ></app-user-video>\n  </div>\n  <div *ngIf=\"!publisher\" class=\"video-local\">\n    <img src=\"/assets/img/webrtc.png\" width=\"320\" height=\"240\" >\n  </div>\n</div>\n"
+module.exports = "<div class=\"contenedor-videollamada\">\n  <!-- video element remotos -->\n  <div *ngFor=\"let sub of subscribers\" class=\"video-remoto\">\n    <app-user-video\n      nombreContacto=\"Usuario remoto\"\n      anchoVideo=\"960\"\n      altoVideo=\"720\"\n      [streamManager]=\"sub\"\n    ></app-user-video>\n    <div class=\"contenedor-herramientas-videollamada background-transparente\">\n      <div>\n        <div>\n          <button (click)=\"disconnectVideollamadaSession()\" class=\"btn-eliminar\">\n            Colgar\n          </button>\n        </div>\n        <div><button class=\"btn-primario\">Mensaje</button></div>\n      </div>\n    </div>\n  </div>\n  <div *ngIf=\"subscribers.lenght == 0\" class=\"video-local\">\n    <img src=\"/assets/img/webrtc.png\" width=\"960\" height=\"720\" >\n  </div>\n  <!-- video element local-->\n  <div *ngIf=\"publisher\" class=\"video-local\">\n    <app-user-video\n      nombreContacto=\"Usuario local\"\n      anchoVideo=\"320\"\n      altoVideo=\"240\"\n      [streamManager]=\"publisher\"\n    ></app-user-video>\n  </div>\n  <div *ngIf=\"!publisher\" class=\"video-local\">\n    <img src=\"/assets/img/webrtc.png\" width=\"320\" height=\"240\" >\n  </div>\n</div>\n<!--Integracion chat normal de texto-->\n<div class=\"contenedor-chat\">\n  <ng-container *ngIf=\"usuarioChat\">\n    <app-videollamada-chat [usuario]=\"usuarioChat\"[conversacion]=\"conversacion\"></app-videollamada-chat>\n  </ng-container>\n</div>"
 
 /***/ }),
 
@@ -1001,6 +1573,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var src_app_service_websocket_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/service/websocket.service */ "./src/app/service/websocket.service.ts");
 /* harmony import */ var src_app_domain_websocket_domain__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! src/app/domain/websocket.domain */ "./src/app/domain/websocket.domain.ts");
 /* harmony import */ var src_app_service_session_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! src/app/service/session.service */ "./src/app/service/session.service.ts");
+/* harmony import */ var src_app_service_chat_service__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! src/app/service/chat.service */ "./src/app/service/chat.service.ts");
+
 
 
 
@@ -1008,10 +1582,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var VideoComponent = /** @class */ (function () {
-    function VideoComponent(videollamadaService, websocketService, sesionService) {
+    function VideoComponent(videollamadaService, websocketService, sesionService, chatService) {
         this.videollamadaService = videollamadaService;
         this.websocketService = websocketService;
         this.sesionService = sesionService;
+        this.chatService = chatService;
         this.subscribers = []; // Remotes
         // --- Propiedades de Componente ---
         this.tituloSesion = 'Ejemplo video';
@@ -1020,6 +1595,7 @@ var VideoComponent = /** @class */ (function () {
     VideoComponent.prototype.ngOnInit = function () {
         var _this = this;
         console.log('componente video INICIADO!!!');
+        // <---------- CONEXION VIDEO STREAMING ------------>
         // ---Propiedades para crear conexion openvidu ---
         var token = this.sesionService.obtenerSesionVideoLLamada().token;
         var usuario = this.sesionService.obtenerUsuarioApp().usuarioOperkall;
@@ -1056,15 +1632,19 @@ var VideoComponent = /** @class */ (function () {
             console.log('stream destruido!!!');
             _this.videollamadaService.deleteSubscriber(event.stream.streamManager);
         });
+        // <---------- CONEXION CHAT NORMAL ------------>
+        var idConversacion = this.sesionService.obtenerConveracionId();
+        this.usuarioChat = this.sesionService.obtenerUsuarioApp().usuarioChat;
+        this.subscripcionConversacion = this.chatService.buscarConversacionById(idConversacion)
+            .subscribe(function (conversacion) {
+            _this.conversacion = conversacion;
+        });
     };
     VideoComponent.prototype.ngOnDestroy = function () {
         console.log('se unsubscriben algunos servicios');
         this.subscripcionConexion.unsubscribe();
         this.subscripcionStreamCreated.unsubscribe();
         this.subscripcionStreamDestroyed.unsubscribe();
-    };
-    VideoComponent.prototype.updateMainStreamManager = function (streamManager) {
-        this.mainStreamManager = streamManager;
     };
     VideoComponent.prototype.disconnectVideollamadaSession = function () {
         this.sesionEstablecida = false;
@@ -1088,7 +1668,8 @@ var VideoComponent = /** @class */ (function () {
         }),
         tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [src_app_service_video_llamada_service__WEBPACK_IMPORTED_MODULE_2__["VideoLlamadaService"],
             src_app_service_websocket_service__WEBPACK_IMPORTED_MODULE_3__["WebsocketService"],
-            src_app_service_session_service__WEBPACK_IMPORTED_MODULE_5__["SessionService"]])
+            src_app_service_session_service__WEBPACK_IMPORTED_MODULE_5__["SessionService"],
+            src_app_service_chat_service__WEBPACK_IMPORTED_MODULE_6__["ChatService"]])
     ], VideoComponent);
     return VideoComponent;
 }());
@@ -1111,7 +1692,7 @@ __webpack_require__.r(__webpack_exports__);
 /**
  * direccion ip webservice de videollamadas
  */
-var WEBSERVICE_VIDEOLLAMADAS = 'https:192.168.0.26:5000';
+var WEBSERVICE_VIDEOLLAMADAS = 'https://192.168.0.26:5000/';
 /**
  * direccion ip websocket comunicacion en tiempo real.
  */
@@ -1124,17 +1705,24 @@ var WEBSOCKET_VIDEOLLAMADAS = 'wss://192.168.0.26:5000/chat';
 /*!*****************************************!*\
   !*** ./src/app/domain/cckall.domain.ts ***!
   \*****************************************/
-/*! exports provided: ContactoAgente, SesionVideoLLamada */
+/*! exports provided: ContactoAgente, UsuarioChat, SesionVideoLLamada */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ContactoAgente", function() { return ContactoAgente; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "UsuarioChat", function() { return UsuarioChat; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SesionVideoLLamada", function() { return SesionVideoLLamada; });
 var ContactoAgente = /** @class */ (function () {
     function ContactoAgente() {
     }
     return ContactoAgente;
+}());
+
+var UsuarioChat = /** @class */ (function () {
+    function UsuarioChat() {
+    }
+    return UsuarioChat;
 }());
 
 var SesionVideoLLamada = /** @class */ (function () {
@@ -1181,7 +1769,7 @@ var TipoMensaje;
     TipoMensaje["REGISTRO_USUARIO"] = "REGISTRO_USUARIO";
     TipoMensaje["SOLICITUD_CANCELAR_LLAMADA"] = "SOLICITUD_CANCELAR_LLAMADA";
     TipoMensaje["CANCELAR_LLAMADA"] = "CANCELAR_LLAMADA";
-    TipoMensaje["RECHAZAR_LLAMADA"] = "RECHAZAR_LLAMADA";
+    TipoMensaje["RECHAZAR_VIDEOLLAMADA"] = "RECHAZAR_VIDEOLLAMADA";
     TipoMensaje["TIMEOUT_LLAMADA"] = "TIMEOUT_LLAMADA";
     TipoMensaje["CONTESTAR_LLAMADA"] = "CONTESTAR_LLAMADA";
     TipoMensaje["ESTABLECER_LLAMADA"] = "ESTABLECER_LLAMADA";
@@ -1190,6 +1778,8 @@ var TipoMensaje;
     TipoMensaje["ERROR_SERVIDOR"] = "ERROR_SERVIDOR";
     TipoMensaje["ERROR_VIDEOLLAMADA"] = "ERROR_VIDEOLLAMADA";
     TipoMensaje["ACTUALIZAR_CONTACTOS"] = "ACTUALIZAR_CONTACTOS";
+    TipoMensaje["MENSAJE_CHAT"] = "MENSAJE_CHAT";
+    TipoMensaje["MENSAJE_ESCRIBIENDO"] = "MENSAJE_ESCRIBIENDO";
 })(TipoMensaje || (TipoMensaje = {}));
 // -------- MENSAJES ASOCIADOS A CONTENIDO DE APP -------
 /**
@@ -1293,6 +1883,90 @@ var AuthenticationGuard = /** @class */ (function () {
 
 /***/ }),
 
+/***/ "./src/app/service/chat.service.ts":
+/*!*****************************************!*\
+  !*** ./src/app/service/chat.service.ts ***!
+  \*****************************************/
+/*! exports provided: ChatService */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ChatService", function() { return ChatService; });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+/* harmony import */ var _session_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./session.service */ "./src/app/service/session.service.ts");
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm5/http.js");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm5/index.js");
+/* harmony import */ var _config_config__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../config/config */ "./src/app/config/config.ts");
+
+
+
+
+
+
+var httpOptions = {
+    headers: new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpHeaders"]({
+        'Content-Type': 'application/json'
+    })
+};
+var ChatService = /** @class */ (function () {
+    function ChatService(sesionService, http) {
+        this.sesionService = sesionService;
+        this.http = http;
+        this.conversaciones = [];
+        // --- comunicacion entre componentes y servicios ---
+        this.mensajeNuevo$ = new rxjs__WEBPACK_IMPORTED_MODULE_4__["Subject"]();
+        this.usuarioEscribiendo$ = new rxjs__WEBPACK_IMPORTED_MODULE_4__["Subject"]();
+    }
+    ChatService.prototype.usuarioApp = function () {
+        return this.sesionService.obtenerUsuarioApp();
+    };
+    ChatService.prototype.buscarConversacion = function (idusuarios) {
+        var url = _config_config__WEBPACK_IMPORTED_MODULE_5__["WEBSERVICE_VIDEOLLAMADAS"] + '/mensajeria/conversacion';
+        var params = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpParams"]()
+            .append('usuarioId', idusuarios[0] + '')
+            .append('usuarioId', idusuarios[1] + '');
+        return this.http.get(url, { params: params });
+    };
+    ChatService.prototype.buscarConversacionById = function (id) {
+        var url = _config_config__WEBPACK_IMPORTED_MODULE_5__["WEBSERVICE_VIDEOLLAMADAS"] + ("/mensajeria/conversacion/" + id);
+        return this.http.get(url);
+    };
+    ChatService.prototype.enviarMensaje = function (conversacionId, mensaje) {
+        var url = _config_config__WEBPACK_IMPORTED_MODULE_5__["WEBSERVICE_VIDEOLLAMADAS"] + ("/mensajeria/conversacion/" + conversacionId + "/mensaje");
+        return this.http.post(url, mensaje, httpOptions);
+    };
+    ChatService.prototype.enviarEscribiendo = function (conversacionId, usuarioId) {
+        var url = _config_config__WEBPACK_IMPORTED_MODULE_5__["WEBSERVICE_VIDEOLLAMADAS"] + ("/mensajeria/conversacion/" + conversacionId + "/escribiendo/" + usuarioId);
+        return this.http.post(url, {});
+    };
+    ChatService.prototype.nuevoUsuarioEscribiendo = function (escribiendo) {
+        this.usuarioEscribiendo$.next(escribiendo);
+    };
+    ChatService.prototype.nuevoMensaje = function (mensaje) {
+        this.mensajeNuevo$.next(mensaje);
+    };
+    ChatService.prototype.getMensajesChat = function () {
+        return this.mensajeNuevo$.asObservable();
+    };
+    ChatService.prototype.getUsuariosEscribiendo = function () {
+        return this.usuarioEscribiendo$.asObservable();
+    };
+    ChatService = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Injectable"])({
+            providedIn: 'root'
+        }),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [_session_service__WEBPACK_IMPORTED_MODULE_2__["SessionService"],
+            _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"]])
+    ], ChatService);
+    return ChatService;
+}());
+
+
+
+/***/ }),
+
 /***/ "./src/app/service/contacto-agente.service.ts":
 /*!****************************************************!*\
   !*** ./src/app/service/contacto-agente.service.ts ***!
@@ -1317,6 +1991,7 @@ var ContactoAgenteService = /** @class */ (function () {
         this.endpoint = _config_config__WEBPACK_IMPORTED_MODULE_3__["WEBSERVICE_VIDEOLLAMADAS"];
     }
     ContactoAgenteService.prototype.buscarContactoAgenteApp = function (id) {
+        console.log('buscar contacto enpoint ' + this.endpoint);
         return this.http.get(this.endpoint + '/login/cckall/' + id);
     };
     ContactoAgenteService.prototype.buscarTodosContactoAgente = function () {
@@ -1457,6 +2132,9 @@ var SessionService = /** @class */ (function () {
         this.sesion.token = token;
         this.storageService.guardarValor('token', token);
     };
+    SessionService.prototype.guardarConversacionId = function (conversacionId) {
+        this.conversacionId = conversacionId;
+    };
     SessionService.prototype.guardarEmisor = function (contacto) {
         this.sesion.emisor = contacto;
     };
@@ -1469,8 +2147,12 @@ var SessionService = /** @class */ (function () {
     SessionService.prototype.obtenerUsuarioApp = function () {
         return this.usuarioApp;
     };
+    SessionService.prototype.obtenerConveracionId = function () {
+        return this.conversacionId;
+    };
     SessionService.prototype.limpiarSesionVideoLLamada = function () {
         this.sesion = new _domain_cckall_domain__WEBPACK_IMPORTED_MODULE_2__["SesionVideoLLamada"]();
+        this.conversacionId = undefined;
     };
     SessionService = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Injectable"])({
@@ -1560,8 +2242,6 @@ var VideoLlamadaService = /** @class */ (function () {
     function VideoLlamadaService() {
         this.subscribers = []; // Remotes
     }
-    VideoLlamadaService.prototype.ngOnInit = function () {
-    };
     VideoLlamadaService.prototype.connectVideollamadas = function (token, username, properties) {
         var _this = this;
         this.OV = new openvidu_browser__WEBPACK_IMPORTED_MODULE_2__["OpenVidu"]();
