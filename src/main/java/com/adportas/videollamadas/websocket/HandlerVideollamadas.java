@@ -105,7 +105,7 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
                 // --- PETICION TERMINAR VIDEOLLAMADA ---
                 MensajeWebsocket<MensajeSimple> request = JsonHelper.convertirObjeto(TypeHelper.getMensajeSimple(), payload);
                 terminarVideoLLamada(session, request);
-                
+
             } 
 
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
@@ -122,10 +122,12 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
     }
 
     /**
-     * Registra un usuario en el servicio de websocket {@link com.adportas.videollamadas.service.WebsocketService}.
+     * Registra un usuario en el servicio de websocket
+     * {@link com.adportas.videollamadas.service.WebsocketService}.
+     *
      * @param session
      * @param request
-     * @throws IOException 
+     * @throws IOException
      */
     private void registroUsuario(WebSocketSession session, MensajeWebsocket<ContactoAgente> request) throws IOException {
         websocketService.registerUser(session.getId(), request.getContenido());
@@ -136,11 +138,14 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
     }
 
     /**
-     * Inicia un videollamada generando una videollamadaId, registra la 
-     * videollamada en {@link com.adportas.videollamadas.service.VideollamadaService }
-     * y enviia los mensajes a los participantes para que puedan aceptar la videollamada.
+     * Inicia un videollamada generando una videollamadaId, registra la
+     * videollamada en {@link com.adportas.videollamadas.service.VideollamadaService
+     * }
+     * y enviia los mensajes a los participantes para que puedan aceptar la
+     * videollamada.
+     *
      * @param request
-     * @throws IOException 
+     * @throws IOException
      */
     private void iniciarVideoLLamada(MensajeWebsocket<MensajeVideoLLamada> request) throws IOException {
         logger.info("Iniciar videollamada [emisor="
@@ -189,12 +194,13 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
     }
 
     /**
-     * Se acepta la llamada y se crea los token de autorizacion para establecer 
+     * Se acepta la llamada y se crea los token de autorizacion para establecer
      * la comunicacion de streaming de la videollamada.
+     *
      * @param request
      * @throws OpenViduJavaClientException
      * @throws OpenViduHttpException
-     * @throws IOException 
+     * @throws IOException
      */
     private void contestarVideoLLamada(MensajeWebsocket<MensajeContestarLLamada> request)
             throws OpenViduJavaClientException, OpenViduHttpException, IOException {
@@ -228,10 +234,11 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
 
     /**
      * rechaza una videollamada entrante y notifica al Usuario emisor.
+     *
      * @param request
      * @throws IOException
      * @throws OpenViduJavaClientException
-     * @throws OpenViduHttpException 
+     * @throws OpenViduHttpException
      */
     private void rechazarVideoLLamada(MensajeWebsocket<MensajeCancelarLLamada> request) throws IOException, OpenViduJavaClientException, OpenViduHttpException {
         String videollamadaId = request.getContenido().getVideollamadaId();
@@ -245,10 +252,11 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
 
     /**
      * Envio de solicitud de cancelar videollamada.
+     *
      * @param request
      * @throws IOException
      * @throws OpenViduJavaClientException
-     * @throws OpenViduHttpException 
+     * @throws OpenViduHttpException
      */
     private void solicitudCancelarVideoLLamada(MensajeWebsocket<MensajeCancelarLLamada> request) throws IOException, OpenViduJavaClientException, OpenViduHttpException {
         String videollamadaId = request.getContenido().getVideollamadaId();
@@ -260,11 +268,12 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
 
     /**
      * Termina la videollamada en estado ESTABLECIENDO.
+     *
      * @param session
      * @param request
      * @throws OpenViduJavaClientException
      * @throws OpenViduHttpException
-     * @throws IOException 
+     * @throws IOException
      */
     private void terminarVideoLLamada(WebSocketSession session, MensajeWebsocket<MensajeSimple> request) throws OpenViduJavaClientException, OpenViduHttpException, IOException {
         String videollamadaId = request.getContenido().getMensaje();
@@ -278,4 +287,5 @@ public class HandlerVideollamadas extends TextWebSocketHandler {
             websocketService.sendMessage(entry.getValue(), response);
         }
     }
+
 }

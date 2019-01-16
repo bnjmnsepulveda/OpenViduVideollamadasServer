@@ -99,13 +99,13 @@ public class ChatREST {
     }
     
     @PostMapping(path = "/conversacion/{idConversacion}/escribiendo/{idUsuarioChat}")
-    public void escribiendoMensaje(@PathVariable("idConversacion") long idConversacion, @PathVariable("idUsuarioChat") long idAgente) throws IOException{
-        logger.info("mensaje escribiendo de agente id=" + idAgente);
-        UsuarioChat contacto = usuarioChatDAO.readById(idAgente);
+    public void escribiendoMensaje(@PathVariable("idConversacion") long idConversacion, @PathVariable("idUsuarioChat") long idUsuarioChat) throws IOException{
+        logger.info("mensaje escribiendo de agente id=" + idUsuarioChat);
+        UsuarioChat contacto = usuarioChatDAO.readById(idUsuarioChat);
         MensajeWebsocketBuilder builder = new MensajeWebsocketBuilder(TipoMensaje.MENSAJE_ESCRIBIENDO);
-        builder.agregar("idContacto", idAgente)
+        builder.agregar("usuarioId", idUsuarioChat)
                 .agregar("mensaje", contacto.getUsername() + " esta escribiendo...");
-        // chatService.enviarMensaje(idConversacion, builder.build());
+         chatService.enviarMensaje(idConversacion, builder.build());
     }
 
 }
